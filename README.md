@@ -13,6 +13,7 @@ Install Virtual Env
 
 ### Create poc-va-api virtual env
 > python3 -m venv poc-va-api
+> source poc-va-api/bin/activate
 
 ### Install dependencies
 > pip3 install -r requirements.txt
