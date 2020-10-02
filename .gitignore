@@ -1,3 +1,6 @@
 #Ignore Jetbrain products
 .idea
 poc-va-api
+
+#Byte-compiled / optimized / DLL files
+__pycache__/
