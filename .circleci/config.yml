@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 jobs:
   unit-test:
     docker:
@@ -15,7 +15,6 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 19.03.13
-          docker_layer_caching: true
       - run: docker-compose up --exit-code-from integration-test
 
 
