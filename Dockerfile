@@ -12,8 +12,8 @@ COPY . /poc-va-api
 WORKDIR /poc-va-api
 
 RUN pip3 install -r requirements.txt
-EXPOSE 5000
+
 ENV FLASK_APP=/poc-va-api/src/app.py
 
 ENTRYPOINT ["flask"]
-CMD ["run"]
+CMD ["run",  "--host=0.0.0.0"]
