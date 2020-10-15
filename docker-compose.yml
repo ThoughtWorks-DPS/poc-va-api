@@ -15,4 +15,4 @@ services:
       - .:/app
     working_dir: /app
     command: >
-      bash -c "pip3 install -r requirements.txt && pytest test/integration"
+      bash -c "pwd && ls && pip3 install -r requirements.txt && pytest test/integration"
