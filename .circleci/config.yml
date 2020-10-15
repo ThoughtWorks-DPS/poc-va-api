@@ -1,33 +1,24 @@
 version: 2
 jobs:
   unit-test:
-    branches:
-      only:
-        - master
-      docker:
-        - image: cimg/python:3.8.6
-      steps:
-        - checkout
-        - run: pip install -r requirements.txt
-        - run: pytest test/unit
+    docker:
+      - image: cimg/python:3.8.6
+    steps:
+      - checkout
+      - run: pip install -r requirements.txt
+      - run: pytest test/unit
 
   integration-test:
-    branches:
-      only:
-        - master
-      machine: true
-      steps:
-        - checkout
-        - run: docker-compose up --exit-code-from integration-test
+    machine: true
+    steps:
+      - checkout
+      - run: docker-compose up --exit-code-from integration-test
 
   push-image:
-    branches:
-      only:
-        - master
-      machine: true
-      steps:
-        - checkout
-        - run: docker ps
+    machine: true
+    steps:
+      - checkout
+      - run: docker ps
 
 workflows:
   version: 2
