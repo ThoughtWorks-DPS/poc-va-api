@@ -9,17 +9,15 @@ jobs:
       - run: pytest test/unit
 
   integration-test:
-    machine: true
+    docker:
+      - image: cimg/python:3.8.6
     steps:
       - checkout
-      - run: docker-compose -v
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
       - run: docker-compose up --exit-code-from integration-test
 
-  push-image:
-    machine: true
-    steps:
-      - checkout
-      - run: docker ps
 
 workflows:
   version: 2
@@ -27,7 +25,3 @@ workflows:
     jobs:
       - unit-test
       - integration-test
-      - push-image:
-          requires:
-            - unit-test
-            - integration-test
