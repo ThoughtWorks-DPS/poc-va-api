@@ -12,6 +12,7 @@ jobs:
     machine: true
     steps:
       - checkout
+      - run: docker-compose -v
       - run: docker-compose up --exit-code-from integration-test
 
   push-image:
