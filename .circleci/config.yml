@@ -1,4 +1,8 @@
 version: 2.1
+
+orbs:
+  secrethub: secrethub/cli@1.0.0
+
 jobs:
   unit-test:
     docker:
@@ -11,13 +15,15 @@ jobs:
   integration-test:
     machine:
       image: ubuntu-2004:202010-01
+    environment:
+      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
-      - run: |
+      - secrethub/exec: |
           docker-compose up --exit-code-from integration-test
           docker images ls
           docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:0.0.1
-          docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:0.0.1
+          docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api:0.0.1
 
   publish:
     machine: true
