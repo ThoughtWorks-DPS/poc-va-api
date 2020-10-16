@@ -15,8 +15,10 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 19.03.13
-      - run: docker-compose up --exit-code-from integration-test
-
+      - run: |
+          docker crerate -v /app --name app alpine:3.4 /bin/true
+          docker cp . app:/app
+          docker-compose up --exit-code-from integration-test
 
 workflows:
   version: 2
