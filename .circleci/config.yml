@@ -13,8 +13,27 @@ jobs:
       image: ubuntu-2004:202010-01
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "48:34:f1:e3:cb:c7:fa:40:cc:70:9f:62:f4:95:10:cb"
       - run: |
           docker-compose up --exit-code-from integration-test
+          current_version=$(git describe --abbrev=0 | tr -d 'v')
+          new_version=$(docker run --rm alpine/semver semver -c -i patch $current_version)
+          git config --global user.email "rilau@thoughtworks.com"
+          git config --global user.name "Rich Lau"
+          git tag -a "v${new_version}" -m "v${new_version}"
+          git push origin master "v${new_version}"
+          docker images ls
+          docker tag poc-va-api_api docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:${new_version}
+          docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:${new_version}
+
+
+  publish:
+    machine: true
+    steps:
+      - checkout
+      - docker ps
 
 workflows:
   version: 2
