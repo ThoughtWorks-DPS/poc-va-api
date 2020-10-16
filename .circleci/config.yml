@@ -9,16 +9,12 @@ jobs:
       - run: pytest test/unit
 
   integration-test:
-    docker:
-      - image: cimg/python:3.8.6
+    machine:
+      image: ubuntu-2004:202010-01
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 19.03.13
       - run: |
-          docker create -v /app --name app alpine:3.4 /bin/true
-          docker cp . app:/app
-          docker-compose up -v app --exit-code-from integration-test
+          docker-compose up --exit-code-from integration-test
 
 workflows:
   version: 2
