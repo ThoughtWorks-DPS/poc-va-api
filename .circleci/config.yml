@@ -18,7 +18,7 @@ jobs:
       - run: |
           docker create -v /app --name app alpine:3.4 /bin/true
           docker cp . app:/app
-          docker-compose up --exit-code-from integration-test
+          docker-compose up -v app --exit-code-from integration-test
 
 workflows:
   version: 2
