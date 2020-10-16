@@ -27,15 +27,10 @@ jobs:
             docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:0.0.1
             docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api:0.0.1
 
-  publish:
-    machine: true
-    steps:
-      - checkout
-      - docker ps
-
 workflows:
   version: 2
   main:
     jobs:
       - unit-test
-      - integration-test
+      - integration-test:
+          context: dps-va-di
