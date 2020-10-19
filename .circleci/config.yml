@@ -4,6 +4,17 @@ orbs:
   secrethub: secrethub/cli@1.0.0
 
 jobs:
+  check-for-secrets:
+    executor: go-agent
+    steps:
+      - checkout
+      - run: |
+          curl -sL https://raw.githubusercontent.com/awslabs/git-secrets/master/git-secrets >> git-secrets
+          chmod +x git-secrets
+          ./git-secrets --add-provider -- cat secrets-pattern.txt
+          ./git-secrets --add --allowed 'secrets-pattern.txt:.*'
+          ./git-secrets --scan
+
   unit-test:
     docker:
       - image: cimg/python:3.8.6
@@ -53,11 +64,13 @@ workflows:
   version: 2
   main:
     jobs:
+      - check-for-secrets
       - unit-test
       - integration-test
       - tag:
           context: dps-va-di
           requires:
+              - check-for-secrets
               - unit-test
               - integration-test
       # - publish:
