@@ -32,11 +32,11 @@ jobs:
       - run: |
           mkdir -p workspace/foobar
           docker-compose up --exit-code-from integration-test
-          docker save -o workspace/foobar project_api:latest
+          docker save project_api:latest > workspace/foobar/project_api:latest.tar
       - persist_to_workspace:
-            root: workspace/foobar
+            root: workspace
             paths:
-                - project_api:latest
+                - foobar/*
 
   # tag:
   #   machine: true
