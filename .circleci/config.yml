@@ -16,13 +16,13 @@ jobs:
           ./git-secrets --add --allowed 'secrets-pattern.txt:.*'
           ./git-secrets --scan
 
-  unit-test:
-    docker:
-      - image: cimg/python:3.8.6
-    steps:
-      - checkout
-      - run: pip install -r requirements.txt
-      - run: pytest test/unit
+  # unit-test:
+  #   docker:
+  #     - image: cimg/python:3.8.6
+  #   steps:
+  #     - checkout
+  #     - run: pip install -r requirements.txt
+  #     - run: pytest test/unit
 
   integration-test:
     machine:
@@ -30,59 +30,59 @@ jobs:
     steps:
       - checkout
       - run: |
-          mkdir -p workspace/temp
+          mkdir -p workspace/foobar
           docker-compose up --exit-code-from integration-test
-          docker save -o workspace/temp project_api:latest
+          docker save -o workspace/foobar project_api:latest
       - persist_to_workspace:
-            root: workspace/temp
+            root: workspace/foobar
             paths:
                 - project_api:latest
 
-  tag:
-    machine: true
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints:
-            - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
-      - run: |
-          current_version=$(git describe --abbrev=0 | tr -d 'v')
-          new_version=$(docker run --rm alpine/semver semver -c -i patch $current_version)
-          git config --global user.email "twdsp.io@thoughtworks.com"
-          git config --global user.name "twdps.io"
-          git tag -a "v${new_version}" -m "v${new_version}"
-          git push origin master "v${new_version}"
+  # tag:
+  #   machine: true
+  #   steps:
+  #     - checkout
+  #     - add_ssh_keys:
+  #         fingerprints:
+  #           - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
+  #     - run: |
+  #         current_version=$(git describe --abbrev=0 | tr -d 'v')
+  #         new_version=$(docker run --rm alpine/semver semver -c -i patch $current_version)
+  #         git config --global user.email "twdsp.io@thoughtworks.com"
+  #         git config --global user.name "twdps.io"
+  #         git tag -a "v${new_version}" -m "v${new_version}"
+  #         git push origin master "v${new_version}"
 
-  publish:
-    machine: true
-    environment:
-      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
-    steps:
-      - checkout
-      - attach_workspace:
-            at: /workspace/temp
-      - secrethub/exec:
-          step-name: publish
-          command: |
-            docker load -i /workspace/temp/project_api:latest.tar
-            current_version=$(git describe --abbrev=0 | tr -d 'v')
-            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
-            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+  # publish:
+  #   machine: true
+  #   environment:
+  #     GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
+  #   steps:
+  #     - checkout
+  #     - attach_workspace:
+  #           at: /workspace/temp
+  #     - secrethub/exec:
+  #         step-name: publish
+  #         command: |
+  #           docker load -i /workspace/temp/project_api:latest.tar
+  #           current_version=$(git describe --abbrev=0 | tr -d 'v')
+  #           echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
+  #           docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+  #           docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
 
 workflows:
   version: 2
   main:
     jobs:
-      - check-for-secrets
-      - unit-test
+      # - check-for-secrets
+      # - unit-test
       - integration-test
-      - tag:
-          context: dps-va-di
-          requires:
-              - check-for-secrets
-              - unit-test
-              - integration-test
-      - publish:
-          requires:
-            - tag
+      # - tag:
+      #     context: dps-va-di
+      #     requires:
+      #         - check-for-secrets
+      #         - unit-test
+      #         - integration-test
+      # - publish:
+      #     requires:
+      #       - tag
