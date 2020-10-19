@@ -23,8 +23,9 @@ jobs:
           step-name: publish
           command: |
             docker-compose up --exit-code-from integration-test
-            echo $CIRCLE_TAG
-            echo $GITHUB_TOKEN | docker login -u $GITHUB_USERNAME --password-stdin
+
+            echo "Circle tag: $CIRCLE_TAG"
+            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
             docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:0.0.1
             docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:0.0.1
 
