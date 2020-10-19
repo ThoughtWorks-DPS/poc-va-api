@@ -15,19 +15,27 @@ jobs:
   integration-test:
     machine:
       image: ubuntu-2004:202010-01
-    environment:
-      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
       - secrethub/exec:
-          step-name: publish
-          command: |
-            docker-compose up --exit-code-from integration-test
+          step-name: integration-test
+          command: docker-compose up --exit-code-from integration-test
 
-            echo "Circle tag: $CIRCLE_TAG"
-            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:0.0.1
-            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:0.0.1
+    tag-publish:
+      machine: true
+      environment:
+        GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
+      steps:
+        - checkout
+        - add_ssh_keys:
+            fingerprints:
+              - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
+        - secrethub/exec:
+            step-name: tag-publish
+            command: |
+              echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
+              docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:0.0.1
+              docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:0.0.1
 
 workflows:
   version: 2
@@ -36,3 +44,8 @@ workflows:
       - unit-test
       - integration-test:
           context: dps-va-di
+      - tag-publish:
+          context: dps-va-di
+          requires:
+              - unit-test
+              - integration-test
