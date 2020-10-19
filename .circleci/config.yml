@@ -5,7 +5,8 @@ orbs:
 
 jobs:
   check-for-secrets:
-    executor: go-agent
+      docker:
+      - image: cimg/python:3.8.6
     steps:
       - checkout
       - run: |
