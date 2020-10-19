@@ -30,11 +30,11 @@ jobs:
     steps:
       - checkout
       - run: |
-          mkdir -p workspace
+          mkdir -p workspace/temp
           docker-compose up --exit-code-from integration-test
-          docker save -o workspace/ project_api:latest
+          docker save -o workspace/temp project_api:latest
       - persist_to_workspace:
-            root: workspace
+            root: workspace/temp
             paths:
                 - project_api:latest
 
@@ -60,11 +60,11 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-            at: /workspace
+            at: /workspace/temp
       - secrethub/exec:
           step-name: publish
           command: |
-            docker load -i /workspace/project_api:latest.tar
+            docker load -i /workspace/temp/project_api:latest.tar
             current_version=$(git describe --abbrev=0 | tr -d 'v')
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
             docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
