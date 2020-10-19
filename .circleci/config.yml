@@ -29,11 +29,17 @@ jobs:
       image: ubuntu-2004:202010-01
     steps:
       - checkout
-      - run: docker-compose up --exit-code-from integration-test
+      - run: |
+          mkdir -p workspace
+          docker-compose up --exit-code-from integration-test
+          docker save -o workspace/ project_api:latest
+      - persist_to_workspace:
+            root: workspace
+            paths:
+                - project_api:latest
 
   tag:
-    docker:
-      - image: cimg/base:2020.01
+    machine: true
     steps:
       - checkout
       - add_ssh_keys:
@@ -47,19 +53,22 @@ jobs:
           git tag -a "v${new_version}" -m "v${new_version}"
           git push origin master "v${new_version}"
 
-  # publish:
-  #   machine: true
-  #   environment:
-  #     GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
-  #   steps:
-  #     - checkout
-  #     - secrethub/exec:
-  #         step-name: publish
-  #         command: |
-  #           current_version=$(git describe --abbrev=0 | tr -d 'v')
-  #           echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-  #           docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
-  #           docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+  publish:
+    machine: true
+    environment:
+      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
+    steps:
+      - checkout
+      - attach_workspace:
+            at: /workspace
+      - secrethub/exec:
+          step-name: publish
+          command: |
+            docker load -i /workspace/project_api:latest.tar
+            current_version=$(git describe --abbrev=0 | tr -d 'v')
+            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
+            docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
 
 workflows:
   version: 2
@@ -74,6 +83,6 @@ workflows:
               - check-for-secrets
               - unit-test
               - integration-test
-      # - publish:
-      #     requires:
-      #       - tag
+      - publish:
+          requires:
+            - tag
