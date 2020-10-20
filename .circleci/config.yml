@@ -78,8 +78,6 @@ workflows:
             - integration-test
       - publish:
           context: dps-va-di
-          requires:
-            - tag
           filters:
             branches:
               ignore: /.*/
