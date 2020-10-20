@@ -28,7 +28,7 @@ jobs:
       - run: |
           mkdir -p workspace/images
           docker-compose up --exit-code-from integration-test
-          docker save -o project_api_latest.tar project_api:latest
+          docker save -o workspace/images/project_api_latest.tar project_api:latest
       - persist_to_workspace:
             root: workspace
             paths:
