@@ -49,16 +49,17 @@ jobs:
           git push origin master "v${new_version}"
   publish:
     machine: true
+    working_directory: /project
     environment:
       GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
       - attach_workspace:
-            at: /tmp/workspace/project_api_latest.tar
+          at: /tmp/workspace
       - secrethub/exec:
           step-name: publish
           command: |
-            ls /tmp/workspace/
+            ls /workspace
             docker load -i /tmp/workspace/project_api_latest.tar
             current_version=$(git describe --abbrev=0 | tr -d 'v')
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
