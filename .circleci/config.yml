@@ -27,8 +27,9 @@ jobs:
       - checkout
       - run: |
           mkdir -p workspace/images/
-          docker-compose up --exit-code-from integration-test
-          docker save -o workspace/images/project_api_latest.tar project_api:latest
+          touch workspace/images/test.txt
+          # docker-compose up --exit-code-from integration-test
+          # docker save -o workspace/images/project_api_latest.tar project_api:latest
       - persist_to_workspace:
             root: workspace
             paths:
@@ -58,11 +59,12 @@ jobs:
       - secrethub/exec:
           step-name: publish
           command: |
-            docker load < /tmp/workspace/images/project_api_latest.tar
-            current_version=$(git describe --abbrev=0 | tr -d 'v')
-            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
-            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+            ls /tmp/workspace/images/
+            # docker load < /tmp/workspace/images/project_api_latest.tar
+            # current_version=$(git describe --abbrev=0 | tr -d 'v')
+            # echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
+            # docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+            # docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
 workflows:
   version: 2
   main:
