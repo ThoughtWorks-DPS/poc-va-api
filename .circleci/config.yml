@@ -54,12 +54,12 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-            at: /workspace/temp
+            at: workspace/temp
       - secrethub/exec:
           step-name: publish
           command: |
             echo "Circle Tag: ${CIRCLE_TAG}"
-            docker load -i /workspace/temp/project_api:latest.tar
+            docker load -i workspace/temp/project_api:latest.tar
             current_version=$(git describe --abbrev=0 | tr -d 'v')
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
             docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
@@ -80,3 +80,8 @@ workflows:
           context: dps-va-di
           requires:
             - tag
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
