@@ -26,7 +26,8 @@ jobs:
     steps:
       - checkout
       - run: |
-          touch test.txt
+          mkdir -p workspace
+          touch workspace/test.txt
           # docker-compose up --exit-code-from integration-test
           # docker save -o workspace/images/project_api_latest.tar project_api:latest
       - persist_to_workspace:
