@@ -28,11 +28,11 @@ jobs:
       - run: |
           mkdir -p workspace/temp
           docker-compose up --exit-code-from integration-test
-          docker save -o workspace/temp/project_api_latest.tar project_api:latest
+          docker save -o project_api_latest.tar project_api:latest
       - persist_to_workspace:
             root: workspace
             paths:
-                - temp/*
+                - images/*
   tag:
     machine: true
     steps:
@@ -54,12 +54,12 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-            at: workspace/temp
+            at: workspace/images
       - secrethub/exec:
           step-name: publish
           command: |
             echo "Circle Tag: ${CIRCLE_TAG}"
-            docker load -i workspace/temp/project_api_latest.tar
+            docker load -i /tmp/workspace/images/project_api_latest.tar
             current_version=$(git describe --abbrev=0 | tr -d 'v')
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
             docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
