@@ -30,7 +30,7 @@ jobs:
           docker-compose up --exit-code-from integration-test
           docker save -o workspace/images/project_api_latest.tar project_api:latest
       - persist_to_workspace:
-            root: workspace
+            root: tmp/workspace
             paths:
                 - images/*
   tag:
