@@ -54,7 +54,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-            at: workspace/images
+            at: /tmp/workspace/images
       - secrethub/exec:
           step-name: publish
           command: |
