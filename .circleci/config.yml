@@ -58,7 +58,7 @@ jobs:
       - secrethub/exec:
           step-name: publish
           command: |
-            docker load < /workspace/images/project_api_latest.tar
+            docker load < /tmp/workspace/images/project_api_latest.tar
             current_version=$(git describe --abbrev=0 | tr -d 'v')
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
             docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
