@@ -55,7 +55,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-            at: /tmp/workspace/
+            at: /tmp/workspace/test.txt
       - secrethub/exec:
           step-name: publish
           command: |
