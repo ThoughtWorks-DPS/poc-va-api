@@ -1,4 +1,3 @@
-Endpoint returning hello world
 ---
 summary: Returns 'Hello World!'
 responses:
@@ -7,3 +6,5 @@ responses:
     schema:
       id: hello_world
       type: string
+    examples:
+      string: "Hello World"
