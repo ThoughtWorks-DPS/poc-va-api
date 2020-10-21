@@ -26,8 +26,7 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pytest test/unit
   integration-test:
-    machine:
-      image: ubuntu-2004:202010-01
+    executor: base-agent
     steps:
       - checkout
       - run: |
