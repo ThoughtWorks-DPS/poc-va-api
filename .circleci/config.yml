@@ -36,9 +36,9 @@ jobs:
 
       #          docker save -o workspace/project_api_latest.tar project_api:latest
       - persist_to_workspace:
-          root: workspace
+          root: /home/circleci/project
           paths:
-            - .
+            - workspace
   tag:
     executor: base-agent
     steps:
@@ -64,11 +64,11 @@ jobs:
       - setup_remote_docker:
           version: 19.03.13
       - attach_workspace:
-          at: /tmp/workspace
+          at: /home/circleci/project/workspace
       - secrethub/exec:
           step-name: publish
           command: |
-            ls /tmp/workspace
+            ls /home/circleci/project/workspace
 #            docker load -i /tmp/workspace/project_api_latest.tar
 #            current_version=$(git describe --abbrev=0 | tr -d 'v')
 #            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
