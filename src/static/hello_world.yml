@@ -1,0 +1,9 @@
+Endpoint returning hello world
+---
+summary: Returns 'Hello World!'
+responses:
+  200:
+    description: OK
+    schema:
+      id: hello_world
+      type: string
