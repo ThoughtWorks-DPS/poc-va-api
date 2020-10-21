@@ -11,14 +11,18 @@ executors:
 jobs:
   check-for-secrets:
     executor: python-agent
+    environment:
+      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
-      - run: |
-          curl -sL https://raw.githubusercontent.com/awslabs/git-secrets/master/git-secrets >> git-secrets
-          chmod +x git-secrets
-          ./git-secrets --add-provider -- cat secrets-pattern.txt
-          ./git-secrets --add --allowed 'secrets-pattern.txt:.*'
-          ./git-secrets --scan
+      - secrethub/exec:
+          step-name: Run
+          command: |
+            curl -sL https://raw.githubusercontent.com/awslabs/git-secrets/master/git-secrets >> git-secrets
+            chmod +x git-secrets
+            curl -H "Authorization: token $GITHUB_TOKEN" https://raw.githubusercontent.com/ThoughtWorks-DPS/poc-documentation/master/git-secrets-pattern.txt >> git-secrets-pattern.txt
+            ./git-secrets --add-provider -- cat git-secrets-pattern.txt
+            ./git-secrets --scan
   unit-test:
     executor: python-agent
     steps:
@@ -70,7 +74,8 @@ workflows:
   version: 2
   main:
     jobs:
-      - check-for-secrets
+      - check-for-secrets:
+          context: dps-va-di
       - unit-test
       - integration-test
       - tag:
