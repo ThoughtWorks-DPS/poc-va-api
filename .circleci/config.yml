@@ -1,10 +1,16 @@
 version: 2.1
 orbs:
   secrethub: secrethub/cli@1.0.0
-jobs:
-  check-for-secrets:
+executors:
+  base-agent:
+    docker:
+      - image: cimg/base:stable
+  python-agent:
     docker:
       - image: cimg/python:3.8.6
+jobs:
+  check-for-secrets:
+    executor: python-agent
     steps:
       - checkout
       - run: |
@@ -14,8 +20,7 @@ jobs:
           ./git-secrets --add --allowed 'secrets-pattern.txt:.*'
           ./git-secrets --scan
   unit-test:
-    docker:
-      - image: cimg/python:3.8.6
+    executor: python-agent
     steps:
       - checkout
       - run: pip install -r requirements.txt
@@ -34,26 +39,29 @@ jobs:
           paths:
             - .
   tag:
-    docker:
-     - image: alpine/semver
+    executor: base-agent
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 19.03.13
       - add_ssh_keys:
           fingerprints:
             - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
       - run: |
           current_version=$(git describe --abbrev=0 | tr -d 'v')
-          new_version=$(semver -c -i patch $current_version)
+          new_version=$(docker run --rm alpine/semver semver -c -i patch $current_version)
           git config --global user.email "twdsp.io@thoughtworks.com"
           git config --global user.name "twdps.io"
           git tag -a "v${new_version}" -m "v${new_version}"
           git push origin master "v${new_version}"
   publish:
-    machine: true
+    executor: base-agent
     environment:
       GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 19.03.13
       - attach_workspace:
           at: ~/home/project
       - secrethub/exec:
