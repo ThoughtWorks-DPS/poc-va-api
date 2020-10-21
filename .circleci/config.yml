@@ -53,7 +53,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /project
+          at: ~/home/project
       - secrethub/exec:
           step-name: publish
           command: |
