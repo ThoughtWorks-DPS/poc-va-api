@@ -1,23 +1,21 @@
 from flask import Flask
-from flask_swagger_ui import get_swaggerui_blueprint
 from flask import Flask, jsonify
-from flask_swagger import swagger
 import os
+from flasgger import Swagger
 
 app = Flask(__name__)
-
-SWAGGER_URL = '/api/docs'
-API_URL = '/static/swagger.json'
-SWAGGER_UI_BLUEPRINT = get_swaggerui_blueprint(
-    SWAGGER_URL,
-    API_URL,
-    config={
-        'app_name': "poc-va-api"
-    }
-)
-app.register_blueprint(SWAGGER_UI_BLUEPRINT, url_prefix=SWAGGER_URL)
-
+swagger = Swagger(app)
 
 @app.route('/')
 def hello_world():
+    """Endpoint returning hello world
+        ---
+        summary: Returns 'Hello World!'
+        responses:
+          200:
+            description: OK
+            schema:
+              id: hello_world
+              type: string
+        """
     return 'Hello, World!'
