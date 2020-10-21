@@ -30,13 +30,11 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pytest test/unit
   build:
-    executor: base-agent
+    machine: true
     environment:
       GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 19.03.13
       - secrethub/exec:
           step-name: build
           command: |
