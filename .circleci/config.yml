@@ -31,11 +31,12 @@ jobs:
     steps:
       - checkout
       - run: |
-          docker-compose up --exit-code-from integration-test
-          touch foobar.txt
-          docker save -o project_api_latest.tar project_api:latest
+#          docker-compose up --exit-code-from integration-test
+          mkdir -p workspace
+          touch workspace/foobar.txt
+#          docker save -o workspace/project_api_latest.tar project_api:latest
       - persist_to_workspace:
-          root: .
+          root: workspace
           paths:
             - .
   tag:
@@ -63,16 +64,16 @@ jobs:
       - setup_remote_docker:
           version: 19.03.13
       - attach_workspace:
-          at: ~/home/project
+          at: /tmp/workspace
       - secrethub/exec:
           step-name: publish
           command: |
-            ls
-            docker load -i project_api_latest.tar
-            current_version=$(git describe --abbrev=0 | tr -d 'v')
-            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
-            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+            ls /tmp/workspace
+#            docker load -i /tmp/workspace/project_api_latest.tar
+#            current_version=$(git describe --abbrev=0 | tr -d 'v')
+#            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
+#            docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+#            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
 workflows:
   version: 2
   main:
