@@ -31,10 +31,11 @@ jobs:
     steps:
       - checkout
       - run: |
-#          docker-compose up --exit-code-from integration-test
           mkdir -p workspace
           touch workspace/foobar.txt
-#          docker save -o workspace/project_api_latest.tar project_api:latest
+#          docker-compose up --exit-code-from integration-test
+
+      #          docker save -o workspace/project_api_latest.tar project_api:latest
       - persist_to_workspace:
           root: workspace
           paths:
