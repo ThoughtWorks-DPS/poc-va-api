@@ -30,15 +30,8 @@ jobs:
     steps:
       - checkout
       - run: |
-          mkdir -p workspace
-          touch workspace/foobar.txt
-#          docker-compose up --exit-code-from integration-test
-
-      #          docker save -o workspace/project_api_latest.tar project_api:latest
-      - persist_to_workspace:
-          root: /home/circleci/project
-          paths:
-            - workspace
+         docker-compose up --exit-code-from integration-test
+         docker save -o workspace/project_api_latest.tar project_api:latest
   tag:
     executor: base-agent
     steps:
@@ -63,17 +56,16 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 19.03.13
-      - attach_workspace:
-          at: /home/circleci/project/workspace
       - secrethub/exec:
           step-name: publish
           command: |
-            ls /home/circleci/project/workspace
-#            docker load -i /tmp/workspace/project_api_latest.tar
-#            current_version=$(git describe --abbrev=0 | tr -d 'v')
-#            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-#            docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
-#            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+           docker-compose up --exit-code-from integration-test
+           docker save -o workspace/project_api_latest.tar project_api:latest
+           docker load -i /tmp/workspace/project_api_latest.tar
+           current_version=$(git describe --abbrev=0 | tr -d 'v')
+           echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
+           docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+           docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
 workflows:
   version: 2
   main:
