@@ -44,13 +44,13 @@ jobs:
            docker build -t project_api:latest .
            docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:latest
            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:latest
-  # integration-test:
-  #   executor: base-agent
-  #   steps:
-  #     - checkout
-  #     - run: |
-  #        docker-compose up --exit-code-from integration-test
-  #        docker save -o workspace/project_api_latest.tar project_api:latest
+  integration-test:
+    machine:
+      image: ubuntu-2004:202010-01
+    steps:
+      - checkout
+      - run: |
+         docker-compose up --exit-code-from integration-test
   # tag:
   #   executor: base-agent
   #   steps:
@@ -94,7 +94,10 @@ workflows:
       - unit-test
       - build:
           context: dps-va-di
-      # - integration-test
+      - integration-test:
+          requires:
+            - unit-test
+            - build
       # - tag:
       #     requires:
       #       - check-for-secrets
