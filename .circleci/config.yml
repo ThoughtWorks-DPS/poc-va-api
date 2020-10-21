@@ -47,9 +47,12 @@ jobs:
   integration-test:
     machine:
       image: ubuntu-2004:202010-01
+    environment:
+      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
       - run: |
+         echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
          docker-compose up --exit-code-from integration-test
   # tag:
   #   executor: base-agent
