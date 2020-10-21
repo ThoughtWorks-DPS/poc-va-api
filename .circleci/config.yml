@@ -41,7 +41,7 @@ jobs:
           step-name: build
           command: |
            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-           docker build -t project_api:latest
+           docker build -t project_api:latest .
            docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:latest
            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:latest
   # integration-test:
