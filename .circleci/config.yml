@@ -35,7 +35,7 @@ jobs:
             - .
   tag:
     docker:
-      image: alpine/semver
+     - image: alpine/semver
     steps:
       - checkout
       - add_ssh_keys:
