@@ -19,7 +19,7 @@ authorize_error = {
 # Run the test with connexion
 # An AssertionError will be raise in case of error.
 # swagger_test(f'{ROOT_DIR}/test.json', authorize_error=authorize_error)
-# swagger_test('/Users/seunoluwaloju/thoughtworks/di/poc-va-api/test.json', authorize_error=authorize_error)
+# swagger_test('{path.to}/test.json', authorize_error=authorize_error)
 
 
 # Or if you have a running API
