@@ -36,7 +36,7 @@ jobs:
       GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
-      - run: |
+      - secrethub/exec: |
          echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
          docker-compose up --exit-code-from integration-test
          docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:latest
