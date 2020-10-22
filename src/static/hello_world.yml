@@ -1,10 +1,7 @@
 ---
+tags:
+  - Hello World
 summary: Returns 'Hello World!'
 responses:
   200:
     description: OK
-    schema:
-      id: hello_world
-      type: string
-    examples:
-      string: "Hello World"

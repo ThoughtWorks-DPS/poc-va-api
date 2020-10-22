@@ -15,5 +15,4 @@ RUN pip3 install -r requirements.txt
 
 ENV FLASK_APP=/poc-va-api/src/app.py
 
-ENTRYPOINT ["flask"]
-CMD ["run",  "--host=0.0.0.0"]
+CMD ["flask", "run",  "--host=0.0.0.0"]
