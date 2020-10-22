@@ -29,31 +29,18 @@ jobs:
       - checkout
       - run: pip install -r requirements.txt
       - run: pytest test/unit
-  build:
-    executor: base-agent
-    environment:
-      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 19.03.13
-      - secrethub/exec:
-          step-name: build
-          command: |
-           echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-           docker build -t project_api:latest .
-           docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:latest
-           docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:latest
   integration-test:
     machine:
       image: ubuntu-2004:202010-01
     environment:
       GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
+      - checkout
       - run: |
          echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-         docker pull docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:latest
          docker-compose up --exit-code-from integration-test
+         docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:latest
+         docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:latest
   # tag:
   #   executor: base-agent
   #   steps:
@@ -95,12 +82,10 @@ workflows:
       - check-for-secrets:
           context: dps-va-di
       - unit-test
-      - build:
-          context: dps-va-di
       - integration-test:
+          context: dps-va-di
           requires:
             - unit-test
-            - build
       # - tag:
       #     requires:
       #       - check-for-secrets
