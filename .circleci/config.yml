@@ -44,16 +44,16 @@ jobs:
            docker build -t project_api:latest .
            docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:latest
            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:latest
-  # integration-test:
-  #   machine:
-  #     image: ubuntu-2004:202010-01
-  #   environment:
-  #     GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
-  #   steps:
-  #     - checkout
-  #     - run: |
-  #        echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-  #        docker-compose up --exit-code-from integration-test
+  integration-test:
+    machine:
+      image: ubuntu-2004:202010-01
+    environment:
+      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
+    steps:
+      - run: |
+         echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
+         docker pull docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:latest
+         docker-compose up --exit-code-from integration-test
   # tag:
   #   executor: base-agent
   #   steps:
@@ -97,10 +97,10 @@ workflows:
       - unit-test
       - build:
           context: dps-va-di
-      # - integration-test:
-      #     requires:
-      #       - unit-test
-      #       - build
+      - integration-test:
+          requires:
+            - unit-test
+            - build
       # - tag:
       #     requires:
       #       - check-for-secrets
