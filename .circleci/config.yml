@@ -38,10 +38,10 @@ jobs:
     steps:
       - checkout
       - secrethub/exec:
-          step-name: integration-test
+          step-name: build
           command: |
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            docker build . -t $CIRCLE_SHA1
+            docker build . -t docker.pkg.github.com/thoughtworks-dps/poc-va-api/$CIRCLE_SHA1
             docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/$CIRCLE_SHA1
 
   # tag:
