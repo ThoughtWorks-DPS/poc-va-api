@@ -90,7 +90,7 @@ jobs:
             git config --global user.name "twdps.io"
             git tag -a "v${new_version}" -m "v${new_version}"
             git push origin master "v${new_version}"
-      - run:
+      - secrethub/exec:
           name: publish
           command: |
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
