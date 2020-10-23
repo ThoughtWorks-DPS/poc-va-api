@@ -29,7 +29,8 @@ jobs:
       - checkout
       - run: pip install -r requirements.txt
       - run: pytest test/unit
-  integration-test:
+
+  build:
     machine:
       image: ubuntu-2004:202010-01
     environment:
@@ -40,7 +41,7 @@ jobs:
           step-name: integration-test
           command: |
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            docker-compose up --exit-code-from integration-test
+            docker-compose up
             docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:${CIRCLE_SHA1:0:7}
             docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:${CIRCLE_SHA1:0:7}
 
@@ -85,11 +86,12 @@ workflows:
       - check-for-secrets:
           context: dps-va-di
       - unit-test
-      - integration-test:
-          context: dps-va-di
-          requires:
-            - unit-test
-      # - tag:
+      - build
+      # - integration-test:
+      #     context: dps-va-di
+      #     requires:
+      #       - unit-test
+      # # - tag:
       #     requires:
       #       - check-for-secrets
       #       - unit-test
