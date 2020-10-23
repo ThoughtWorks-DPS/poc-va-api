@@ -30,7 +30,7 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pytest test/unit
 
-  build:
+  build-push:
     machine:
       image: ubuntu-2004:202010-01
     environment:
@@ -38,7 +38,7 @@ jobs:
     steps:
       - checkout
       - secrethub/exec:
-          step-name: build
+          step-name: build-push
           command: |
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
             docker build . -t docker.pkg.github.com/thoughtworks-dps/poc-va-api/$CIRCLE_SHA1
@@ -85,7 +85,7 @@ workflows:
       - check-for-secrets:
           context: dps-va-di
       - unit-test
-      - build:
+      - build-push:
           context: dps-va-di
       # - tag:
       #     requires:
