@@ -101,12 +101,12 @@ workflows:
       - unit-test
       - build-push:
           context: dps-va-di
-      - integration-test:
-          context: dps-va-di
-          requires:
-              - check-for-secrets
-              - unit-test
-              - build-push
+#      - integration-test:
+#          context: dps-va-di
+#          requires:
+#              - check-for-secrets
+#              - unit-test
+#              - build-push
       # - tag:
       #     requires:
       #       - check-for-secrets
