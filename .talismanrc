@@ -9,3 +9,5 @@ fileignoreconfig:
   checksum: 570d47508a064e134eebc4070302c6eff4e8086caebf7612d2e10d78b4d35f65
 - filename: .circleci/config.yml
   checksum: 84adedccf2c810b4b4ae9fe63c3da5db7151626a8c683680f8674f07ab728d7b
+- filename: .circleci/config.yml
+  checksum: da867c25d2d87d104a358c15ca6728c7f7a42a61e7120082ff332733c10fb80d
