@@ -86,7 +86,8 @@ workflows:
       - check-for-secrets:
           context: dps-va-di
       - unit-test
-      - build
+      - build:
+          context: dps-va-di
       # - integration-test:
       #     context: dps-va-di
       #     requires:
