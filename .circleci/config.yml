@@ -41,8 +41,7 @@ jobs:
           step-name: integration-test
           command: |
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            docker-build .
-            docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:${CIRCLE_SHA1:0:7}
+            docker build -t project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:${CIRCLE_SHA1:0:7}
             docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:${CIRCLE_SHA1:0:7}
 
   # tag:
@@ -88,11 +87,7 @@ workflows:
       - unit-test
       - build:
           context: dps-va-di
-      # - integration-test:
-      #     context: dps-va-di
-      #     requires:
-      #       - unit-test
-      # # - tag:
+      # - tag:
       #     requires:
       #       - check-for-secrets
       #       - unit-test
