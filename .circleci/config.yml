@@ -90,13 +90,13 @@ jobs:
             git config --global user.name "twdps.io"
             git tag -a "v${new_version}" -m "v${new_version}"
             git push origin master "v${new_version}"
-      # - run:
-      #     name: publish
-      #     command: |
-      #       echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-      #       docker pull docker.pkg.github.com/thoughtworks-dps/poc-va-api/$CIRCLE_SHA1
-      #       docker tag docker.pkg.github.com/thoughtworks-dps/poc-va-api/$CIRCLE_SHA1 docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
-      #       docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+      - run:
+          name: publish
+          command: |
+            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
+            docker pull docker.pkg.github.com/thoughtworks-dps/poc-va-api/$CIRCLE_SHA1
+            docker tag docker.pkg.github.com/thoughtworks-dps/poc-va-api/$CIRCLE_SHA1 docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
 
 workflows:
   version: 2
@@ -120,8 +120,3 @@ workflows:
             - integration-test
             - swagger-test
           context: dps-va-di
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
