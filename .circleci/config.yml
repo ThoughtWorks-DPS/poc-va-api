@@ -117,14 +117,10 @@ workflows:
       - integration-test:
           context: dps-va-di
           requires:
-              - check-for-secrets
-              - unit-test
-              - build-push
+            - build-push
       - swagger-test:
           context: dps-va-di
           requires:
-            - check-for-secrets
-            - unit-test
             - build-push
       # - tag:
       #     requires:
