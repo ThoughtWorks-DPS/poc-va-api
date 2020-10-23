@@ -50,6 +50,7 @@ jobs:
     environment:
       GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
+      - checkout
       - secrethub/exec:
           step-name: integration-test
           command: |
