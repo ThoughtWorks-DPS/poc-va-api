@@ -1,0 +1,8 @@
+version: "3.2"
+services:
+  swagger-test:
+    container_name: "swagger-test"
+    image: "apiaryio/dredd:12.2.0"
+    network_mode: host
+    command: >
+      sh -c "dredd http://localhost:5000/apispec_1.json http://127.0.0.1:5000 --language=python"

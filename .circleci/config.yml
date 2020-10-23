@@ -28,7 +28,7 @@ jobs:
     steps:
       - checkout
       - run: pip install -r requirements.txt
-      - run: pytest test/unit
+      - run: make unit-test
 
   build-push:
     machine:
@@ -41,21 +41,21 @@ jobs:
           step-name: build-push
           command: |
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            docker build . -t docker.pkg.github.com/thoughtworks-dps/poc-va-api/$CIRCLE_SHA1
+            make GIT_HASH="$($CIRCLE_SHA1)" build
             docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/$CIRCLE_SHA1
 
-  integration-test:
-    machine:
-      image: ubuntu-2004:202010-01
-    environment:
-      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
-    steps:
-      - checkout
-      - secrethub/exec:
-          step-name: integration-test
-          command: |
-            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            docker pull docker.pkg.github.com/thoughtworks-dps/poc-va-api/$CIRCLE_SHA1
+#  integration-test:
+#    machine:
+#      image: ubuntu-2004:202010-01
+#    environment:
+#      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
+#    steps:
+#      - checkout
+#      - secrethub/exec:
+#          step-name: integration-test
+#          command: |
+#            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
+#            docker pull docker.pkg.github.com/thoughtworks-dps/poc-va-api/$CIRCLE_SHA1
 
 
   # tag:

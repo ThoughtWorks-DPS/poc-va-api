@@ -8,7 +8,7 @@ COPY --from=0 /coredns/coredns /coredns
 
 EXPOSE 53 53/udp
 
-COPY . /poc-va-api
+ADD . /poc-va-api
 WORKDIR /poc-va-api
 
 RUN pip3 install -r requirements.txt
