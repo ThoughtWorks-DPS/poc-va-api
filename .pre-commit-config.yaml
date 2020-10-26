@@ -1,5 +1,5 @@
 repos:
-  -   repo: https://github.com/thoughtworks/talisman
-      rev: v1.9.0
+  -   repo: https://github.com/awslabs/git-secrets
+      rev: master 
       hooks:
-        -   id: talisman-commit
+        -   id: git-secrets
