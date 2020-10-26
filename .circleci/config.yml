@@ -71,7 +71,8 @@ jobs:
             make GIT_HASH=${CIRCLE_SHA1:0:7} swagger-test
 
   tag-push:
-    executor: base-agent
+    machine:
+      image: ubuntu-2004:202010-01
     environment:
       GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
@@ -93,12 +94,11 @@ jobs:
       - secrethub/exec:
           step-name: publish
           command: |
-            SHORT_HASH=$(CIRCLE_SHA1 | cut -c1-8)
             current_version=$(git describe --abbrev=0 | tr -d 'v')
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            docker pull docker.pkg.github.com/thoughtworks-dps/poc-va-api/$SHORT_HASH
-            # docker tag docker.pkg.github.com/thoughtworks-dps/poc-va-api/${CIRCLE_SHA1:0:7} docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
-            # docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+            docker pull docker.pkg.github.com/thoughtworks-dps/poc-va-api/${CIRCLE_SHA1:0:7}
+            docker tag docker.pkg.github.com/thoughtworks-dps/poc-va-api/${CIRCLE_SHA1:0:7} docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
 
 workflows:
   version: 2
