@@ -4,14 +4,13 @@ RUN git clone https://github.com/coredns/coredns.git /coredns
 RUN cd /coredns && make
 
 FROM python:3.7-slim AS python-env
-COPY --from=go-env /coredns/coredns /coredns
 
 ADD . /poc-va-api
 WORKDIR /poc-va-api
 RUN pip3 install -r requirements.txt
 
 FROM gcr.io/distroless/python3-debian10
-COPY --from=python-env /coredns /coredns
+COPY --from=go-env /coredns/coredns /coredns
 COPY --from=python-env /usr/local/lib/python3.7/site-packages /usr/local/lib/python3.7/site-packages
 COPY --from=python-env /poc-va-api /poc-va-api
 
