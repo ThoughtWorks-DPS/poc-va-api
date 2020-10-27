@@ -3,7 +3,7 @@ FROM golang:1.14
 RUN git clone https://github.com/coredns/coredns.git /coredns
 RUN cd /coredns && make
 
-FROM python:3.8.6-slim
+FROM python:3.7-slim
 COPY --from=0 /coredns/coredns /coredns
 
 EXPOSE 53 53/udp

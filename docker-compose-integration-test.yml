@@ -2,7 +2,7 @@ version: "3.2"
 services:
   integration-test:
     container_name: "integration-test"
-    image: "python:3.8.6-slim"
+    image: "python:3.7-slim"
     network_mode: host
     volumes:
       - .:/app
