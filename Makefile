@@ -7,8 +7,8 @@ unit-test:
 build:
 	docker build . -t docker.pkg.github.com/thoughtworks-dps/poc-va-api/$(GIT_HASH)
 
-app:
-	docker-compose -f docker-compose-app.yml up -d
+app:build
+	docker run -d -p 5000:5000 docker.pkg.github.com/thoughtworks-dps/poc-va-api/$(GIT_HASH)
 
 integration-test:
 	docker-compose -f docker-compose-integration-test.yml up --exit-code-from integration-test

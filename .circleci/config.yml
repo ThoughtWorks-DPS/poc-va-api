@@ -34,9 +34,7 @@ jobs:
       - checkout
       - run:
           name: Build and run image
-          command: |
-            make GIT_HASH=${CIRCLE_SHA1:0:7} build
-            make GIT_HASH=${CIRCLE_SHA1:0:7} app
+          command: make GIT_HASH=${CIRCLE_SHA1:0:7} app
       - run:
           name: Run swagger test
           background: true

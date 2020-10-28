@@ -1,7 +1,0 @@
-version: "3.2"
-services:
-  api:
-    container_name: "poc-va-api"
-    image: "docker.pkg.github.com/thoughtworks-dps/poc-va-api/$GIT_HASH"
-    ports:
-      - "5000:5000"
