@@ -30,6 +30,7 @@ jobs:
       image: ubuntu-2004:202010-01
     environment:
       GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
+    parallelism: 2
     steps:
       - checkout
       - secrethub/exec:
