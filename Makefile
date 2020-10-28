@@ -10,10 +10,10 @@ build:
 app:
 	docker-compose -f docker-compose-app.yml up -d
 
-integration-test:app
+integration-test:
 	docker-compose -f docker-compose-integration-test.yml up --exit-code-from integration-test
 
-swagger-test:app
+swagger-test:
 	docker-compose -f docker-compose-swagger-test.yml up --exit-code-from swagger-test
 
 help:
