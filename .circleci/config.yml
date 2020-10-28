@@ -34,6 +34,7 @@ jobs:
       - checkout
       - secrethub/exec:
           step-name: Run integration test
+          background: true
           command: |
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
             make GIT_HASH=${CIRCLE_SHA1:0:7} build
