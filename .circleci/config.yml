@@ -39,7 +39,7 @@ jobs:
             make GIT_HASH=${CIRCLE_SHA1:0:7} build
             make GIT_HASH=${CIRCLE_SHA1:0:7} integration-test
       - run:
-          ame: Run swagger test
+          name: Run swagger test
           command: |
             make GIT_HASH=${CIRCLE_SHA1:0:7} swagger-test
       - secrethub/exec:
