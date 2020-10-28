@@ -32,7 +32,8 @@ jobs:
       GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
-      - run: Build and run image
+      - run:
+          name: Build and run image
           command: |
             make GIT_HASH=${CIRCLE_SHA1:0:7} build
             make GIT_HASH=${CIRCLE_SHA1:0:7} app
