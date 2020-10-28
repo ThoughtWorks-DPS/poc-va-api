@@ -32,17 +32,18 @@ jobs:
       GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
+      - run:
+          name: Run swagger test
+          background: true
+          command: |
+            make GIT_HASH=${CIRCLE_SHA1:0:7} build
+            make GIT_HASH=${CIRCLE_SHA1:0:7} swagger-test
       - secrethub/exec:
           step-name: Run integration test
-          background: true
           command: |
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
             make GIT_HASH=${CIRCLE_SHA1:0:7} build
             make GIT_HASH=${CIRCLE_SHA1:0:7} integration-test
-      - run:
-          name: Run swagger test
-          command: |
-            make GIT_HASH=${CIRCLE_SHA1:0:7} swagger-test
       - secrethub/exec:
           step-name: Push image
           command: |
