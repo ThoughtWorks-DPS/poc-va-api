@@ -5,8 +5,8 @@
 ```sh
 brew install pre-commit
 brew install git-secrets
-git-secrets --add-provider -- curl https://raw.githubusercontent.com/ThoughtWorks-DPS/poc-resources/main/git-secrets-pattern.txt
-pre-commit install
+git-secrets --add-provider -- curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/ThoughtWorks-DPS/poc-resources/main/git-secrets-pattern.txt
+pre-commit install -f 
 ```
 
 #### Python virtual environment setup
