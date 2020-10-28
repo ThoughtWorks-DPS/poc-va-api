@@ -38,13 +38,13 @@ jobs:
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
             make GIT_HASH=${CIRCLE_SHA1:0:7} build
             make GIT_HASH=${CIRCLE_SHA1:0:7} integration-test
-      - secrethub/exec:
+      - run:
           step-name: Run swagger test
           command: |
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
             make GIT_HASH=${CIRCLE_SHA1:0:7} swagger-test
             docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/${CIRCLE_SHA1:0:7}
-      - secrethub/exec:
+      - run:
           step-name: Push image
           command: |
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
