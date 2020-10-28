@@ -1,20 +1,12 @@
-FROM golang:1.14 AS go-env
-
-RUN git clone https://github.com/coredns/coredns.git /coredns
-RUN cd /coredns && make
-
 FROM python:3.7-slim AS python-env
-
 ADD . /poc-va-api
 WORKDIR /poc-va-api
 RUN pip3 install -r requirements.txt
 
 FROM gcr.io/distroless/python3-debian10
-COPY --from=go-env /coredns/coredns /coredns
 COPY --from=python-env /usr/local/lib/python3.7/site-packages /usr/local/lib/python3.7/site-packages
 COPY --from=python-env /poc-va-api /poc-va-api
 
-EXPOSE 53 53/udp
 EXPOSE 5000 5000/tcp
 
 ENV PYTHONPATH=/usr/local/lib/python3.7/site-packages

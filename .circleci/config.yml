@@ -25,20 +25,6 @@ jobs:
       - run: pip install -r requirements.txt
       - run: make unit-test
 
-  build-push:
-    machine:
-      image: ubuntu-2004:202010-01
-    environment:
-      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
-    steps:
-      - checkout
-      - secrethub/exec:
-          step-name: build-push
-          command: |
-            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            make GIT_HASH=${CIRCLE_SHA1:0:7} build
-            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/${CIRCLE_SHA1:0:7}
-
   integration-test:
     machine:
       image: ubuntu-2004:202010-01
@@ -50,17 +36,10 @@ jobs:
           step-name: integration-test
           command: |
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
+            make GIT_HASH=${CIRCLE_SHA1:0:7} build
             make GIT_HASH=${CIRCLE_SHA1:0:7} integration-test
-
-  swagger-test:
-    machine:
-      image: ubuntu-2004:202010-01
-    environment:
-      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
-    steps:
-      - checkout
       - secrethub/exec:
-          step-name: integration-test
+          step-name: swagger-test
           command: |
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
             make GIT_HASH=${CIRCLE_SHA1:0:7} swagger-test
@@ -100,18 +79,11 @@ workflows:
       - check-for-secrets:
           context: dps-va-di
       - unit-test
-      - build-push:
-          context: dps-va-di
       - integration-test:
           context: dps-va-di
-          requires:
-            - build-push
-      - swagger-test:
-          context: dps-va-di
-          requires:
-            - build-push
       - tag-push:
           requires:
             - integration-test
-            - swagger-test
+            - unit-test
+            - check-for-secrets
           context: dps-va-di
