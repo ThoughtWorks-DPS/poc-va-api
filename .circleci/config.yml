@@ -73,9 +73,11 @@ jobs:
           command: |
             current_version=$(git describe --abbrev=0 | tr -d 'v')
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            docker pull docker.pkg.github.com/thoughtworks-dps/poc-va-api/${CIRCLE_SHA1:0:7}
-            docker tag docker.pkg.github.com/thoughtworks-dps/poc-va-api/${CIRCLE_SHA1:0:7} docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
-            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+            echo $CIRCLE_SHA1
+            echo ${CIRCLE_SHA1:0:7}
+#            docker pull docker.pkg.github.com/thoughtworks-dps/poc-va-api/${CIRCLE_SHA1:0:7}
+#            docker tag docker.pkg.github.com/thoughtworks-dps/poc-va-api/${CIRCLE_SHA1:0:7} docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+#            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
 
 workflows:
   version: 2
