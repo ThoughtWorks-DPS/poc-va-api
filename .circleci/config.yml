@@ -20,7 +20,7 @@ jobs:
     steps:
       - checkout
       - run: pip install -r requirements.txt
-      - run: make unit-test
+      - run: pytest test/unit
 
   integration-test:
     machine:
