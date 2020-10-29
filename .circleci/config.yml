@@ -49,12 +49,13 @@ jobs:
             docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/${CIRCLE_SHA1:0:7}
 
   tag-push:
-    machine:
-      image: ubuntu-2004:202010-01
+    executor: base-agent
     environment:
       GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 19.03.13
       - add_ssh_keys:
           fingerprints:
             - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
