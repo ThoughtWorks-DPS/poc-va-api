@@ -4,13 +4,10 @@ orbs:
 executors:
   base-agent:
     docker:
-      - image: cimg/base:stable
-  python-agent:
-    docker:
-      - image: cimg/python:3.7
+      - image: twdps/di-circleci-infra-image:stable
 jobs:
   check-for-secrets:
-    executor: python-agent
+    executor: base-agent
     steps:
       - checkout
       - run: |
@@ -19,7 +16,7 @@ jobs:
           ./git-secrets --add-provider -- curl https://raw.githubusercontent.com/ThoughtWorks-DPS/poc-resources/master/git-secrets-pattern.txt
           ./git-secrets --scan
   unit-test:
-    executor: python-agent
+    executor: base-agent
     steps:
       - checkout
       - run: pip install -r requirements.txt
