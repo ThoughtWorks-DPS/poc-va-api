@@ -5,12 +5,13 @@
 replicaCount: 1
 
 image:
-  repository: nginx
+  repository: docker.pkg.github.com/thoughtworks-dps/poc-va-api
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: github-package-cred
 nameOverride: ""
 fullnameOverride: ""
 
