@@ -55,4 +55,25 @@ Run swagger tests
 make GIT_HASH="$(git rev-parse --short HEAD)" swagger-test
 ```
 
-
+### Deploy to local kubernetes cluster
+#### (1) Install Helm
+```sh
+brew install helm
+```
+#### (2) Install minikube
+```sh
+brew install minikube
+```
+```sh
+minikube start
+```
+#### (3) Run cluster setup (first time)
+##### Create namespace
+```sh
+kubectl apply -f ../poc-platform-eks/tpl/namespace_environments.yaml
+```
+##### Create secrets
+```sh
+chmod +x ../poc-platform-eks/tpl/create_cluster_secrets.sh
+../poc-platform-eks/tpl/create_cluster_secrets.sh
+```
