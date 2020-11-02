@@ -31,19 +31,19 @@ jobs:
       - checkout
       - run:
           name: Build and run image
-          command: make GIT_HASH=${CIRCLE_SHA1:0:7} app
+          command: make GIT_HASH=${CIRCLE_SHA1:0:8} app
       - run:
           name: Run swagger test
           background: true
-          command: make GIT_HASH=${CIRCLE_SHA1:0:7} swagger-test
+          command: make GIT_HASH=${CIRCLE_SHA1:0:8} swagger-test
       - run:
           name: Run integration test
-          command: make GIT_HASH=${CIRCLE_SHA1:0:7} integration-test
+          command: make GIT_HASH=${CIRCLE_SHA1:0:8} integration-test
       - secrethub/exec:
           step-name: Push image
           command: |
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/${CIRCLE_SHA1:0:7}
+            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/${CIRCLE_SHA1:0:8}
 
   tag-push:
     executor: base-agent
