@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help build
+.PHONY: help build build-test
 
 unit-test:
 	pytest test/unit
@@ -8,10 +8,13 @@ build:
 	docker build . -t docker.pkg.github.com/thoughtworks-dps/poc-va-api/$(GIT_HASH)
 
 app:build
-	docker run -d -p 5000:5000 docker.pkg.github.com/thoughtworks-dps/poc-va-api/$(GIT_HASH)
+	docker run --name va-api -d -p 5000:5000 docker.pkg.github.com/thoughtworks-dps/poc-va-api/$(GIT_HASH)
 
-integration-test:
-	docker-compose -f docker-compose-integration-test.yml up --exit-code-from integration-test
+build-test:
+	docker build -t integration:latest -f Dockerfile.tests .
+
+integration-test:build-test
+	docker run --network container:va-api integration:latest pytest test/integration
 
 swagger-test:
 	docker-compose -f docker-compose-swagger-test.yml up --exit-code-from swagger-test

@@ -23,12 +23,13 @@ jobs:
       - run: pytest test/unit
 
   integration-test:
-    machine:
-      image: ubuntu-2004:202010-01
+    executor: base-agent
     environment:
       GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 19.03.13
       - run:
           name: Build and run image
           command: make GIT_HASH=${CIRCLE_SHA1:0:8} app
