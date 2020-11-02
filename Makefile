@@ -11,7 +11,7 @@ app:build
 	docker run --name va-api -d -p 5000:5000 docker.pkg.github.com/thoughtworks-dps/poc-va-api/$(GIT_HASH)
 
 build-test:
-	docker build -t integration:latest -f Dockerfile.tests .
+	docker build -t integration:latest -f Dockerfile.integration_test .
 
 integration-test:build-test
 	docker run --network container:va-api integration:latest pytest test/integration
