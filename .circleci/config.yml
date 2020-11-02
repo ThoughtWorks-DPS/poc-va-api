@@ -70,7 +70,7 @@ jobs:
           command: |
             current_version=$(git describe --abbrev=0 | tr -d 'v')
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            git_sha=$(git rev-parse --short HEAD)
+            git_sha=$(git rev-parse --short=8 HEAD)
             docker pull docker.pkg.github.com/thoughtworks-dps/poc-va-api/$git_sha
             docker tag docker.pkg.github.com/thoughtworks-dps/poc-va-api/$git_sha docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
             docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
