@@ -47,7 +47,7 @@ jobs:
             docker save -o workspace/project_api_latest.tar project_api:latest
       - persist_to_workspace:
           root: /tmp
-          paths: /images/project_api_latest.tar
+          paths: images/project_api_latest.tar
 
   tag-push:
     executor: base-agent
