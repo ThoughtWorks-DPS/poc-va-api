@@ -11,7 +11,7 @@ jobs:
     steps:
       - checkout
       - run: |
-          echo "test me" > test.txt
+          echo "test me" > /tmp/test.txt
       - persist_to_workspace:
           root: /tmp
           paths: foobar/test.txt
