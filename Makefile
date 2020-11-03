@@ -8,7 +8,7 @@ build:
 	docker build . -t project_api:latest
 
 app:build
-	docker run --name va-api -d -p 5000:5000 project_api_latest
+	docker run --name va-api -d -p 5000:5000 project_api:latest
 
 build-test:
 	docker build -t integration:latest -f Dockerfile.integration_test .
