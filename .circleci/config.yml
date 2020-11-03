@@ -22,7 +22,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: /tmp/foobar
+          at: /tmp
       - run: |
           cat /tmp/foobar/test.txt
 
