@@ -24,8 +24,6 @@ jobs:
 
   integration-test:
     executor: base-agent
-    environment:
-      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
       - setup_remote_docker:
@@ -34,19 +32,22 @@ jobs:
           command: sudo apk add --no-cache make==4.3-r0
       - run:
           name: Build and run image
-          command: make GIT_HASH=${CIRCLE_SHA1:0:8} app
+          command: make app
       - run:
           name: Run swagger test
           background: true
-          command: make GIT_HASH=${CIRCLE_SHA1:0:8} swagger-test
+          command: make swagger-test
       - run:
           name: Run integration test
-          command: make GIT_HASH=${CIRCLE_SHA1:0:8} integration-test
-      - secrethub/exec:
-          step-name: Push image
+          command: make integration-test
+      - run:
+          step-name: Save Image
           command: |
-            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/${CIRCLE_SHA1:0:8}
+            mkdir /tmp/images
+            docker save -o workspace/project_api_latest.tar project_api:latest
+      - persist_to_workspace:
+          root: /tmp
+          paths: /images/project_api_latest.tar
 
   tag-push:
     executor: base-agent
@@ -56,6 +57,8 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 19.03.13
+      - attach_workspace:
+          at: /tmp
       - add_ssh_keys:
           fingerprints:
             - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
@@ -73,9 +76,8 @@ jobs:
           command: |
             current_version=$(git describe --abbrev=0 | tr -d 'v')
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            git_sha=$(git rev-parse --short=8 HEAD)
-            docker pull docker.pkg.github.com/thoughtworks-dps/poc-va-api/$git_sha
-            docker tag docker.pkg.github.com/thoughtworks-dps/poc-va-api/$git_sha docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+            docker load -i /tmp/images/project_api_latest.tar
+            docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
             docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
 
 workflows:
@@ -85,8 +87,7 @@ workflows:
       - check-for-secrets:
           context: dps-va-di
       - unit-test
-      - integration-test:
-          context: dps-va-di
+      - integration-test
       - tag-push:
           requires:
             - integration-test
