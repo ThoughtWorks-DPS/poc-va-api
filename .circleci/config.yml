@@ -6,90 +6,30 @@ executors:
     docker:
       - image: twdps/di-circleci-infra-image:stable
 jobs:
-  check-for-secrets:
+  persist_something:
     executor: base-agent
     steps:
       - checkout
       - run: |
-          curl -sL https://raw.githubusercontent.com/awslabs/git-secrets/master/git-secrets >> git-secrets
-          chmod +x git-secrets
-          ./git-secrets --add-provider -- curl https://raw.githubusercontent.com/ThoughtWorks-DPS/poc-resources/master/git-secrets-pattern.txt
-          ./git-secrets --scan
-  unit-test:
-    executor: base-agent
-    steps:
-      - checkout
-      - run: pip install -r requirements.txt
-      - run: pytest test/unit
+          echo "test me" > test.txt
+      - persist_to_workspace:
+          root: /tmp
+          paths: foobar/test.txt
 
-  integration-test:
+  get_something_back:
     executor: base-agent
-    environment:
-      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 19.03.13
-      - run:
-          command: sudo apk add --no-cache make==4.3-r0
-      - run:
-          name: Build and run image
-          command: make GIT_HASH=${CIRCLE_SHA1:0:8} app
-      - run:
-          name: Run swagger test
-          background: true
-          command: make GIT_HASH=${CIRCLE_SHA1:0:8} swagger-test
-      - run:
-          name: Run integration test
-          command: make GIT_HASH=${CIRCLE_SHA1:0:8} integration-test
-      - secrethub/exec:
-          step-name: Push image
-          command: |
-            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/${CIRCLE_SHA1:0:8}
-
-  tag-push:
-    executor: base-agent
-    environment:
-      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 19.03.13
-      - add_ssh_keys:
-          fingerprints:
-            - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
-      - secrethub/exec:
-          step-name: tag
-          command: |
-            current_version=$(git describe --abbrev=0 | tr -d 'v')
-            new_version=$(docker run --rm alpine/semver semver -c -i patch $current_version)
-            git config --global user.email "twdsp.io@thoughtworks.com"
-            git config --global user.name "twdps.io"
-            git tag -a "v${new_version}" -m "v${new_version}"
-            git push origin master "v${new_version}"
-      - secrethub/exec:
-          step-name: publish
-          command: |
-            current_version=$(git describe --abbrev=0 | tr -d 'v')
-            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            git_sha=$(git rev-parse --short=8 HEAD)
-            docker pull docker.pkg.github.com/thoughtworks-dps/poc-va-api/$git_sha
-            docker tag docker.pkg.github.com/thoughtworks-dps/poc-va-api/$git_sha docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
-            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+      - attach_workspace:
+          at: /tmp/foobar
+      - run: |
+          cat /tmp/foobar/test.txt
 
 workflows:
   version: 2
   main:
     jobs:
-      - check-for-secrets:
-          context: dps-va-di
-      - unit-test
-      - integration-test:
-          context: dps-va-di
-      - tag-push:
+      - persist_something
+      - get_something_back:
           requires:
-            - integration-test
-            - unit-test
-            - check-for-secrets
-          context: dps-va-di
+            - persist_something
