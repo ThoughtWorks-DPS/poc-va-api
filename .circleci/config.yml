@@ -112,13 +112,24 @@ workflows:
           context: dps-va-di
       - unit-test
       - integration-test
-      - tag-patch:
+      - tag-patch-option:
           type: approval
           requires:
             - check-for-secrets
             - unit-test
             - integration-test
+      - tag-minor-option:
+          requires:
+            - check-for-secrets
+            - unit-test
+            - integration-test
+      - tag-patch:
+          requires:
+            - tag-patch-option
+      - tag-minor:
+          requires:
+            - tag-minor-option
       - push:
           requires:
-            - tag-patch
+            - tag-minor
           context: dps-va-di
