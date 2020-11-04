@@ -119,6 +119,7 @@ workflows:
             - unit-test
             - integration-test
       - tag-minor-option:
+          type: approval
           requires:
             - check-for-secrets
             - unit-test
