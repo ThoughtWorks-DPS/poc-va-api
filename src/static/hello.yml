@@ -1,0 +1,7 @@
+---
+tags:
+  - hello
+summary: Returns 'Hello from the API!'
+responses:
+  200:
+    description: OK

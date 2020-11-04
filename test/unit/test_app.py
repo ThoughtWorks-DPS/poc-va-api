@@ -16,4 +16,7 @@ def test_hello_world(client):
     assert response.data.decode('utf-8') == 'Hello, World!'
     assert response.status == '200 OK'
 
-
+def test_hello_from_api(client):
+    response = client.get ('/hello')
+    assert response.data.decode('utf-8') == 'Hello from the API!'
+    assert response.status == '200 OK'

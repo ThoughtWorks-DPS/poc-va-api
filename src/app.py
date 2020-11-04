@@ -17,6 +17,10 @@ swagger = Swagger(app)
 def hello_world():
     return 'Hello, World!'
 
+@app.route('/hello')
+@swag_from('static/hello.yml')
+def hello():
+    return 'Hello from the API!'
 
 if __name__ == "__main__":
     app.run()
