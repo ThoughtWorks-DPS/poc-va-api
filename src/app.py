@@ -11,12 +11,6 @@ app.config['SWAGGER'] = {
 
 swagger = Swagger(app)
 
-
-@app.route('/')
-@swag_from('static/hello_world.yml')
-def hello_world():
-    return 'Hello, World!'
-
 @app.route('/hello')
 @swag_from('static/hello.yml')
 def hello():

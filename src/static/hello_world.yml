@@ -1,7 +1,0 @@
----
-tags:
-  - Hello World
-summary: Returns 'Hello World!'
-responses:
-  200:
-    description: OK
