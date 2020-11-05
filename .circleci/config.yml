@@ -72,8 +72,6 @@ jobs:
 
   dev-deploy:
     executor: base-agent
-    environment:
-      ACCOUNT_ID: secrethub://vapoc/platform/svc/aws/aws-account-id
     steps:
       - checkout
       - run:
@@ -85,7 +83,8 @@ jobs:
       - run:
           name: assume-role
           command: |
-            aws sts assume-role --output json --role-arn arn:aws:iam::${ACCOUNT_ID}:role/DPSTerraformRole --role-session-name dev-deployment > credentials
+            export AWS_ACCOUNT_ID=$(secrethub read vapoc/platform/svc/aws/aws-account-id)
+            aws sts assume-role --output json --role-arn arn:aws:iam::$AWS_ACCOUNT_ID:role/DPSTerraformRole --role-session-name dev-deployment > credentials
             export AWS_ACCESS_KEY_ID=$(cat credentials | jq -r ".Credentials.AccessKeyId")
             export AWS_SECRET_ACCESS_KEY=$(cat credentials | jq -r ".Credentials.SecretAccessKey")
             export AWS_SESSION_TOKEN=$(cat credentials | jq -r ".Credentials.SessionToken")
