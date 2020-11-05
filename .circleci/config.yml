@@ -200,8 +200,6 @@ workflows:
             - check-for-secrets
             - unit-test
             - integration-test
-      - dev-deploy:
-          context: dps-va-di
       - tag-patch-option:
           type: approval
           requires:
