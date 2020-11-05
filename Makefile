@@ -5,10 +5,10 @@ unit-test:
 	pytest test/unit
 
 build:
-	docker build . -t project_api:latest
+	docker build . -t docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$(GIT_HASH)
 
 app:build
-	docker run --name va-api -d -p 5000:5000 project_api:latest
+	docker run --name va-api -d -p 5000:5000 docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$(GIT_HASH)
 
 build-test:
 	docker build -t integration:latest -f Dockerfile.integration_test .

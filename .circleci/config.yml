@@ -32,7 +32,7 @@ jobs:
           command: sudo apk add --no-cache make==4.3-r0
       - run:
           name: Build and run image
-          command: make app
+          command: make GIT_HASH=${CIRCLE_SHA1:0:7} app
       - run:
           name: Run swagger test
           background: true
