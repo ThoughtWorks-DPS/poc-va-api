@@ -24,6 +24,8 @@ jobs:
 
   integration-test:
     executor: base-agent
+    environment:
+      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
       - setup_remote_docker:
