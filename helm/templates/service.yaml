@@ -3,7 +3,8 @@ kind: Service
 metadata:
   name: {{ include "helm.fullname" . }}
   labels:
-    {{- include "helm.labels" . | nindent 4 }}
+    app: {{ include "helm.fullname" . }}
+    version: {{ .Values.tag }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -12,4 +13,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "helm.selectorLabels" . | nindent 4 }}
+    app: {{ include "helm.fullname" . }}
