@@ -173,7 +173,8 @@ workflows:
       - integration-test
       - push-git-hash:
           context: dps-va-di
-          requires: integration-test
+          requires:
+            - integration-test
       - tag-patch-option:
           type: approval
           requires:
