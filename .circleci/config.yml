@@ -70,6 +70,22 @@ jobs:
             docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:${CIRCLE_SHA1:0:7}
             docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:${CIRCLE_SHA1:0:7}
 
+  dev-deploy:
+    executor: base-agent
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+      - run:
+          name: pull kubeconfig
+          shell: secrethub run -- /bin/sh -eo pipefail
+          command: |
+            mkdir ~/.kube
+            SECRETHUB_VAR_ENV=preview secrethub inject -i tpl/kubeconfig.tpl -o ~/.kube/config
+      - run:
+          name: deploy to eks
+          command: helm install poc-va-api helm --set tag=0.0.67 -n di-dev
+
   patch-tag-push:
     executor: base-agent
     environment:
@@ -174,7 +190,11 @@ workflows:
       - push-git-hash:
           context: dps-va-di
           requires:
+            - check-for-secrets
+            - unit-test
             - integration-test
+      - dev-deploy:
+          context: dps-va-di
       - tag-patch-option:
           type: approval
           requires:
