@@ -54,43 +54,7 @@ jobs:
           root: /tmp
           paths: images/project_api_latest.tar
 
-  tag-patch:
-    executor: base-agent
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 19.03.13
-      - add_ssh_keys:
-          fingerprints:
-            - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
-      - run:
-          command: |
-            current_version=$(git describe --abbrev=0 | tr -d 'v')
-            new_version=$(docker run --rm alpine/semver semver -c -i patch $current_version)
-            git config --global user.email "twdsp.io@thoughtworks.com"
-            git config --global user.name "twdps.io"
-            git tag -a "v${new_version}" -m "v${new_version}"
-            git push origin master "v${new_version}"
-
-  tag-minor:
-    executor: base-agent
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 19.03.13
-      - add_ssh_keys:
-          fingerprints:
-            - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
-      - run:
-          command: |
-            current_version=$(git describe --abbrev=0 | tr -d 'v')
-            new_version=$(docker run --rm alpine/semver semver -c -i minor $current_version)
-            git config --global user.email "twdsp.io@thoughtworks.com"
-            git config --global user.name "twdps.io"
-            git tag -a "v${new_version}" -m "v${new_version}"
-            git push origin master "v${new_version}"
-
-  push:
+  patch-tag-push:
     executor: base-agent
     environment:
       GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
@@ -100,6 +64,80 @@ jobs:
           version: 19.03.13
       - attach_workspace:
           at: /tmp
+      - add_ssh_keys:
+          fingerprints:
+            - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
+      - run:
+          name: tag-patch
+          command: |
+            current_version=$(git describe --abbrev=0 | tr -d 'v')
+            new_version=$(docker run --rm alpine/semver semver -c -i patch $current_version)
+            git config --global user.email "twdsp.io@thoughtworks.com"
+            git config --global user.name "twdps.io"
+            git tag -a "v${new_version}" -m "v${new_version}"
+            git push origin master "v${new_version}"
+      - secrethub/exec:
+          step-name: publish
+          command: |
+            current_version=$(git describe --abbrev=0 | tr -d 'v')
+            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
+            docker load -i /tmp/images/project_api_latest.tar
+            docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+
+  minor-tag-push:
+    executor: base-agent
+    environment:
+      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+      - attach_workspace:
+          at: /tmp
+      - add_ssh_keys:
+          fingerprints:
+            - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
+      - run:
+          name: tag-minor
+          command: |
+            current_version=$(git describe --abbrev=0 | tr -d 'v')
+            new_version=$(docker run --rm alpine/semver semver -c -i minor $current_version)
+            git config --global user.email "twdsp.io@thoughtworks.com"
+            git config --global user.name "twdps.io"
+            git tag -a "v${new_version}" -m "v${new_version}"
+            git push origin master "v${new_version}"
+      - secrethub/exec:
+          step-name: publish
+          command: |
+            current_version=$(git describe --abbrev=0 | tr -d 'v')
+            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
+            docker load -i /tmp/images/project_api_latest.tar
+            docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+
+  major-tag-push:
+    executor: base-agent
+    environment:
+      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+      - attach_workspace:
+          at: /tmp
+      - add_ssh_keys:
+          fingerprints:
+            - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
+      - run:
+          name: tag-major
+          command: |
+            current_version=$(git describe --abbrev=0 | tr -d 'v')
+            new_version=$(docker run --rm alpine/semver semver -c -i major $current_version)
+            git config --global user.email "twdsp.io@thoughtworks.com"
+            git config --global user.name "twdps.io"
+            git tag -a "v${new_version}" -m "v${new_version}"
+            git push origin master "v${new_version}"
       - secrethub/exec:
           step-name: publish
           command: |
@@ -129,13 +167,21 @@ workflows:
             - check-for-secrets
             - unit-test
             - integration-test
-      - tag-patch:
+      - tag-major-option:
+          type: approval
+          requires:
+            - check-for-secrets
+            - unit-test
+            - integration-test
+      - patch-tag-push:
           requires:
             - tag-patch-option
-      - tag-minor:
+          context: dps-va-di
+      - minor-tag-push:
           requires:
             - tag-minor-option
-      - push:
+          context: dps-va-di
+      - major-tag-push:
           requires:
-            - tag-minor
+            - tag-major-option
           context: dps-va-di
