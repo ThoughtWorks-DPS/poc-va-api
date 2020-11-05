@@ -74,14 +74,20 @@ jobs:
     executor: base-agent
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 19.03.13
       - run:
           name: pull kubeconfig
           shell: secrethub run -- /bin/sh -eo pipefail
           command: |
             mkdir ~/.kube
             SECRETHUB_VAR_ENV=preview secrethub inject -i tpl/kubeconfig.tpl -o ~/.kube/config
+      - run:
+          name: assume-role
+          command: |
+            aws sts assume-role --output json --role-arn arn:aws:iam::{{ vapoc/platform/svc/aws/aws-account-id }}:role/DPSTerraformRole --role-session-name awspec-test > credentials
+            export AWS_ACCESS_KEY_ID=$(cat credentials | jq -r ".Credentials.AccessKeyId")
+            export AWS_SECRET_ACCESS_KEY=$(cat credentials | jq -r ".Credentials.SecretAccessKey")
+            export AWS_SESSION_TOKEN=$(cat credentials | jq -r ".Credentials.SessionToken")
+            export AWS_DEFAULT_REGION=us-west-2
       - run:
           name: deploy to eks
           command: helm install poc-va-api helm --set tag=0.0.67 -n di-dev
