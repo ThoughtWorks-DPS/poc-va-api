@@ -196,6 +196,8 @@ workflows:
             - push-git-hash
       - release:
           type: approval
+          requires:
+            - dev-deploy
       - tag-patch-option:
           type: approval
           requires:
