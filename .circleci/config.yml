@@ -87,7 +87,7 @@ jobs:
             export AWS_ACCESS_KEY_ID=$(secrethub read vapoc/platform/svc/aws/DPSSimpleServiceAccount/aws-access-key-id)
             export AWS_SECRET_ACCESS_KEY=$(secrethub read vapoc/platform/svc/aws/DPSSimpleServiceAccount/aws-secret-access-key)
             export AWS_DEFAULT_REGION=us-west-2
-            helm install poc-va-api helm --set tag=0.0.67 -n di-dev
+            helm upgrade poc-va-api helm --set tag=${CIRCLE_SHA1:0:7} -n di-dev
 
   patch-tag-push:
     executor: base-agent
@@ -190,32 +190,28 @@ workflows:
           context: dps-va-di
       - unit-test
       - integration-test
-      - dev-deploy:
-          context: dps-va-di
       - push-git-hash:
           context: dps-va-di
           requires:
             - check-for-secrets
             - unit-test
             - integration-test
+      - dev-deploy:
+          context: dps-va-di
+          requires:
+            - push-git-hash
       - tag-patch-option:
           type: approval
           requires:
-            - check-for-secrets
-            - unit-test
-            - integration-test
+            - dev-deploy
       - tag-minor-option:
           type: approval
           requires:
-            - check-for-secrets
-            - unit-test
-            - integration-test
+            - dev-deploy
       - tag-major-option:
           type: approval
           requires:
-            - check-for-secrets
-            - unit-test
-            - integration-test
+            - dev-deploy
       - patch-tag-push:
           requires:
             - tag-patch-option
