@@ -70,10 +70,23 @@ minikube start
 #### (3) Run cluster setup (first time)
 ##### Create namespace
 ```sh
-kubectl apply -f ../poc-platform-eks/tpl/namespace_environments.yaml
+chmod +x create_namespaces.sh
+./create_namespaces.sh
 ```
 ##### Create secrets
 ```sh
 chmod +x ../poc-platform-eks/tpl/create_cluster_secrets.sh
 ../poc-platform-eks/tpl/create_cluster_secrets.sh
+```
+##### Helm deploy
+```sh
+helm upgrade --install poc-va-api helm --set tag=${CIRCLE_SHA1:0:7} -n di-dev
+```
+#### Port Forward (withour ISTIO)
+```sh
+kubectl port-forward ${POD_NAME} 5000:5000 -n di-dev
+```
+##### Helm uninstall
+```sh
+helm delete poc-va-api -n di-dev
 ```
