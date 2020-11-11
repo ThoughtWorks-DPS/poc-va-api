@@ -89,6 +89,14 @@ jobs:
             export AWS_DEFAULT_REGION=us-west-2
             helm upgrade --install poc-va-api helm --set tag=${CIRCLE_SHA1:0:7} -n di-dev
 
+  dev-smoke-test:
+    executor: base-agent
+    steps:
+      - checkout
+      - run:
+          name: run smoke test
+          command: ./smoke-test http://dev.devportal.com/teams
+
   patch-tag-push:
     executor: base-agent
     environment:
@@ -194,6 +202,9 @@ workflows:
           context: dps-va-di
           requires:
             - push-git-hash
+      - dev-smoke-test:
+          requires:
+            - dev-deploy
       - release:
           type: approval
           requires:
