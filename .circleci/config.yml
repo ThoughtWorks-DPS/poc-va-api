@@ -246,7 +246,7 @@ workflows:
       - release:
           type: approval
           requires:
-            - dev-deploy
+            - dev-smoke-test
       - tag-patch-option:
           type: approval
           requires:
