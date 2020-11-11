@@ -97,6 +97,34 @@ jobs:
           name: run smoke test
           command: ./smoke-test.sh http://dev.devportal.com/teams
 
+  staging-deploy:
+    executor: base-agent
+    steps:
+      - checkout
+      - run:
+          name: pull kubeconfig
+          shell: secrethub run -- /bin/sh -eo pipefail
+          command: |
+            mkdir ~/.kube
+            SECRETHUB_VAR_ENV=preview secrethub inject -i tpl/kubeconfig.tpl -o ~/.kube/config
+      - run:
+          name: run helm chart
+          command: |
+            current_version=$(git describe --abbrev=0 | tr -d 'v')
+            export AWS_ACCOUNT_ID=$(secrethub read vapoc/platform/svc/aws/aws-account-id)
+            export AWS_ACCESS_KEY_ID=$(secrethub read vapoc/platform/svc/aws/DPSSimpleServiceAccount/aws-access-key-id)
+            export AWS_SECRET_ACCESS_KEY=$(secrethub read vapoc/platform/svc/aws/DPSSimpleServiceAccount/aws-secret-access-key)
+            export AWS_DEFAULT_REGION=us-west-2
+            helm upgrade --install poc-va-api helm --set tag=$current_version -n di-staging
+
+  staging-smoke-test:
+    executor: base-agent
+    steps:
+      - checkout
+      - run:
+          name: run smoke test
+          command: ./smoke-test.sh http://api.devportal.com/teams
+
   patch-tag-push:
     executor: base-agent
     environment:
@@ -205,6 +233,16 @@ workflows:
       - dev-smoke-test:
           requires:
             - dev-deploy
+      - staging-deploy:
+          context: dps-va-di
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
+      - staging-smoke-test:
+          requires:
+            - staging-deploy
       - release:
           type: approval
           requires:
