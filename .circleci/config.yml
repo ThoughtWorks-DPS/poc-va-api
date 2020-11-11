@@ -95,7 +95,7 @@ jobs:
       - checkout
       - run:
           name: run smoke test
-          command: ./smoke-test http://dev.devportal.com/teams
+          command: ./smoke-test.sh http://dev.devportal.com/teams
 
   patch-tag-push:
     executor: base-agent
