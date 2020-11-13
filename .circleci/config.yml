@@ -87,7 +87,7 @@ jobs:
             export AWS_ACCESS_KEY_ID=$(secrethub read vapoc/platform/svc/aws/DPSSimpleServiceAccount/aws-access-key-id)
             export AWS_SECRET_ACCESS_KEY=$(secrethub read vapoc/platform/svc/aws/DPSSimpleServiceAccount/aws-secret-access-key)
             export AWS_DEFAULT_REGION=us-west-2
-            helm upgrade --install poc-va-api helm --set tag=${CIRCLE_SHA1:0:7} -n di-dev
+            helm upgrade --install poc-va-api helm --set image.tag=${CIRCLE_SHA1:0:7} -n di-dev
 
   dev-smoke-test:
     executor: base-agent
@@ -115,7 +115,7 @@ jobs:
             export AWS_ACCESS_KEY_ID=$(secrethub read vapoc/platform/svc/aws/DPSSimpleServiceAccount/aws-access-key-id)
             export AWS_SECRET_ACCESS_KEY=$(secrethub read vapoc/platform/svc/aws/DPSSimpleServiceAccount/aws-secret-access-key)
             export AWS_DEFAULT_REGION=us-west-2
-            helm upgrade --install poc-va-api helm --set tag=$current_version -n di-staging
+            helm upgrade --install poc-va-api helm --set image.tag=$current_version -n di-staging
 
   staging-smoke-test:
     executor: base-agent
