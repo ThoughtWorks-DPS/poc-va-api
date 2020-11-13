@@ -10,7 +10,15 @@ def client():
     with app.app.test_client() as client:
         yield client
 
+
 def test_hello_from_api(client):
     response = client.get ('/hello')
     assert response.data.decode('utf-8') == 'Hello from the API!'
+    assert response.status == '200 OK'
+
+
+def test_health_endpoint(client):
+    response = client.get('/health')
+    response_json = response.get_json()
+    assert response_json["status"] == 'success'
     assert response.status == '200 OK'

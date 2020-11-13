@@ -95,7 +95,7 @@ jobs:
       - checkout
       - run:
           name: run smoke test
-          command: ./smoke-test.sh http://dev.devportal.name/teams
+          command: ./smoke-test.sh http://dev.devportal.name/teams/health
 
   staging-deploy:
     executor: base-agent
@@ -123,7 +123,7 @@ jobs:
       - checkout
       - run:
           name: run smoke test
-          command: ./smoke-test.sh http://api.devportal.name/teams
+          command: ./smoke-test.sh http://api.devportal.name/teams/health
 
   tag-patch:
     executor: base-agent

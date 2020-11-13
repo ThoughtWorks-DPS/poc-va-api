@@ -1,5 +1,6 @@
 from flasgger import Swagger, swag_from
 from flask import Flask
+from healthcheck import HealthCheck
 
 app = Flask(__name__)
 
@@ -10,6 +11,7 @@ app.config['SWAGGER'] = {
 }
 
 swagger = Swagger(app)
+health = HealthCheck(app, "/health")
 
 @app.route('/hello')
 @swag_from('static/hello.yml')
