@@ -125,15 +125,7 @@ jobs:
           name: run smoke test
           command: ./smoke-test.sh http://api.devportal.name/teams
 
-  tag-patch-option:
-    executor: base-agent
-    environment:
-      RELEASE_TYPE: patch
-    steps:
-      - run:
-          command: echo $RELEASE_TYPE
-
-  tag-push:
+  tag-patch:
     executor: base-agent
     environment:
       GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
@@ -148,19 +140,71 @@ jobs:
           name: tag-patch
           command: |
             current_version=$(git describe --abbrev=0 | tr -d 'v')
-            new_version=$(docker run --rm alpine/semver semver -c -i $RELEASE_TYPE $current_version)
+            new_version=$(docker run --rm alpine/semver semver -c -i patch $current_version)
             git config --global user.email "twdsp.io@thoughtworks.com"
             git config --global user.name "twdps.io"
             git tag -a "v${new_version}" -m "v${new_version}"
             git push origin master "v${new_version}"
-      - secrethub/exec:
-          step-name: publish
+
+  tag-minor:
+    executor: base-agent
+    environment:
+      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+      - add_ssh_keys:
+          fingerprints:
+            - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
+      - run:
+          name: tag-minor
           command: |
             current_version=$(git describe --abbrev=0 | tr -d 'v')
-            echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
-            docker pull docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:${CIRCLE_SHA1:0:7}
-            docker tag docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:${CIRCLE_SHA1:0:7} docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
-            docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+            new_version=$(docker run --rm alpine/semver semver -c -i minor $current_version)
+            git config --global user.email "twdsp.io@thoughtworks.com"
+            git config --global user.name "twdps.io"
+            git tag -a "v${new_version}" -m "v${new_version}"
+            git push origin master "v${new_version}"
+
+  tag-major:
+    executor: base-agent
+    environment:
+      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+      - add_ssh_keys:
+          fingerprints:
+            - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
+      - run:
+          name: tag-major
+          command: |
+            current_version=$(git describe --abbrev=0 | tr -d 'v')
+            new_version=$(docker run --rm alpine/semver semver -c -i major $current_version)
+            git config --global user.email "twdsp.io@thoughtworks.com"
+            git config --global user.name "twdps.io"
+            git tag -a "v${new_version}" -m "v${new_version}"
+            git push origin master "v${new_version}"
+
+  publish:
+    executor: base-agent
+    steps:
+    - checkout
+    - setup_remote_docker:
+        version: 19.03.13
+    - add_ssh_keys:
+        fingerprints:
+          - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
+    - secrethub/exec:
+        step-name: publish
+        command: |
+          current_version=$(git describe --abbrev=0 | tr -d 'v')
+          echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
+          docker pull docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:${CIRCLE_SHA1:0:7}
+          docker tag docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:${CIRCLE_SHA1:0:7} docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
+          docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$current_version
 
 workflows:
   version: 2
@@ -185,6 +229,8 @@ workflows:
             - dev-deploy
       - staging-deploy:
           context: dps-va-di
+          requires:
+            - publish
           filters:
             branches:
               ignore: /.*/
@@ -214,7 +260,19 @@ workflows:
           type: approval
           requires:
             - release
-      - tag-push:
+      - tag-patch:
+          requires:
+            - tag-patch-option
+          context: dps-va-di
+      - tag-minor:
+          requires:
+            - tag-minor-option
+          context: dps-va-di
+      - tag-major:
+          requires:
+            - tag-major-option
+          context: dps-va-di
+      - publish:
           context: dps-va-di
           filters:
             branches:
