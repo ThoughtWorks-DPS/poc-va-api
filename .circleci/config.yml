@@ -127,8 +127,6 @@ jobs:
 
   tag-patch:
     executor: base-agent
-    environment:
-      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
       - setup_remote_docker:
@@ -148,8 +146,6 @@ jobs:
 
   tag-minor:
     executor: base-agent
-    environment:
-      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
       - setup_remote_docker:
@@ -169,8 +165,6 @@ jobs:
 
   tag-major:
     executor: base-agent
-    environment:
-      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
       - checkout
       - setup_remote_docker:
@@ -190,6 +184,8 @@ jobs:
 
   publish:
     executor: base-agent
+    environment:
+      GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
     steps:
     - checkout
     - setup_remote_docker:
