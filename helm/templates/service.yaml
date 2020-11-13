@@ -4,7 +4,7 @@ metadata:
   name: {{ include "helm.fullname" . }}
   labels:
     app: {{ include "helm.fullname" . }}
-    version: {{ .Values.tag }}
+    version: {{ .Values.image.tag }}
 spec:
   type: {{ .Values.service.type }}
   ports:

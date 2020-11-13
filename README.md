@@ -80,7 +80,7 @@ chmod +x ../poc-platform-eks/tpl/create_cluster_secrets.sh
 ```
 ##### Helm deploy
 ```sh
-helm upgrade --install poc-va-api helm --set tag=${CIRCLE_SHA1:0:7} -n di-dev
+helm upgrade --install poc-va-api helm --set image.tag=${CIRCLE_SHA1:0:7} -n di-dev
 ```
 #### Port Forward (withour ISTIO)
 ```sh

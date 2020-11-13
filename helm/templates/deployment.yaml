@@ -4,7 +4,7 @@ metadata:
   name: {{ include "helm.fullname" . }}
   labels:
     app: {{ include "helm.fullname" . }}
-    version: {{ .Values.tag }}
+    version: {{ .Values.image.tag }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -20,7 +20,7 @@ spec:
       {{- end }}
       labels:
         app: {{ include "helm.fullname" . }}
-        version: {{ .Values.tag }}
+        version: {{ .Values.image.tag }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

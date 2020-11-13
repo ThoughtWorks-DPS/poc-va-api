@@ -5,7 +5,7 @@
 replicaCount: 1
 image:
   repository: docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   tag: "override-me"
 
 imagePullSecrets:
