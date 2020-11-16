@@ -1,10 +1,25 @@
 version: 2.1
+
 orbs:
   secrethub: secrethub/cli@1.0.0
+
 executors:
   base-agent:
     docker:
       - image: twdps/di-circleci-infra-image:stable
+
+on-push-master: &on-push-master
+  branches:
+    only: /master/
+  tags:
+    ignore: /.*/
+
+on-tag-master: &on-tag-master
+  branches:
+    ignore: /.*/
+  tags:
+    only: /.*/
+
 jobs:
   check-for-secrets:
     executor: base-agent
@@ -89,14 +104,6 @@ jobs:
             export AWS_DEFAULT_REGION=us-west-2
             helm upgrade --install poc-va-api helm --set image.tag=${CIRCLE_SHA1:0:7} -n di-dev
 
-  dev-smoke-test:
-    executor: base-agent
-    steps:
-      - checkout
-      - run:
-          name: run smoke test
-          command: ./smoke-test.sh http://dev.devportal.name/teams/health
-
   staging-deploy:
     executor: base-agent
     steps:
@@ -117,13 +124,18 @@ jobs:
             export AWS_DEFAULT_REGION=us-west-2
             helm upgrade --install poc-va-api helm --set image.tag=$current_version -n di-staging
 
-  staging-smoke-test:
+  smoke-test:
     executor: base-agent
+    parameters:
+      host:
+        description: target endpoint to run smoke test
+        type: string
+        default: ""
     steps:
       - checkout
       - run:
           name: run smoke test
-          command: ./smoke-test.sh http://api.devportal.name/teams/health
+          command: ./smoke-test.sh http://<< parameters.host >>/teams/health
 
   tag:
     executor: base-agent
@@ -187,26 +199,22 @@ workflows:
           context: dps-va-di
           requires:
             - push-git-hash
-      - dev-smoke-test:
+      - smoke-test:
+          name: dev-smoke-test
+          host: dev.devportal.name
           requires:
             - dev-deploy
       - staging-deploy:
           context: dps-va-di
           requires:
             - publish
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
-      - staging-smoke-test:
+          filters: *on-tag-master
+      - smoke-test:
+          name: staging-smoke-test
+          host: api.devportal.name
           requires:
             - staging-deploy
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
+          filters: *on-tag-master
       - release:
           type: approval
           requires:
@@ -243,8 +251,4 @@ workflows:
           context: dps-va-di
       - publish:
           context: dps-va-di
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
+          filters: *on-tag-master
