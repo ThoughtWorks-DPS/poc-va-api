@@ -125,46 +125,13 @@ jobs:
           name: run smoke test
           command: ./smoke-test.sh http://api.devportal.name/teams/health
 
-  tag-patch:
+  tag:
     executor: base-agent
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 19.03.13
-      - add_ssh_keys:
-          fingerprints:
-            - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
-      - run:
-          name: tag-patch
-          command: |
-            current_version=$(git describe --abbrev=0 | tr -d 'v')
-            new_version=$(docker run --rm alpine/semver semver -c -i patch $current_version)
-            git config --global user.email "twdsp.io@thoughtworks.com"
-            git config --global user.name "twdps.io"
-            git tag -a "v${new_version}" -m "v${new_version}"
-            git push origin master "v${new_version}"
-
-  tag-minor:
-    executor: base-agent
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 19.03.13
-      - add_ssh_keys:
-          fingerprints:
-            - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
-      - run:
-          name: tag-minor
-          command: |
-            current_version=$(git describe --abbrev=0 | tr -d 'v')
-            new_version=$(docker run --rm alpine/semver semver -c -i minor $current_version)
-            git config --global user.email "twdsp.io@thoughtworks.com"
-            git config --global user.name "twdps.io"
-            git tag -a "v${new_version}" -m "v${new_version}"
-            git push origin master "v${new_version}"
-
-  tag-major:
-    executor: base-agent
+    parameters:
+      semantic_version:
+        description: target semantic version
+        type: string
+        default: ""
     steps:
       - checkout
       - setup_remote_docker:
@@ -176,7 +143,7 @@ jobs:
           name: tag-major
           command: |
             current_version=$(git describe --abbrev=0 | tr -d 'v')
-            new_version=$(docker run --rm alpine/semver semver -c -i major $current_version)
+            new_version=$(docker run --rm alpine/semver semver -c -i << parameters.semantic_version >> $current_version)
             git config --global user.email "twdsp.io@thoughtworks.com"
             git config --global user.name "twdps.io"
             git tag -a "v${new_version}" -m "v${new_version}"
@@ -256,15 +223,21 @@ workflows:
           type: approval
           requires:
             - release
-      - tag-patch:
+      - tag:
+          name: tag-patch
+          context: dps-va-di
+          semantic_version: patch
           requires:
             - tag-patch-option
-          context: dps-va-di
-      - tag-minor:
+      - tag:
+          name: tag-minor
+          semantic_version: minor
           requires:
             - tag-minor-option
           context: dps-va-di
-      - tag-major:
+      - tag:
+          name: tag-major
+          semantic_version: major
           requires:
             - tag-major-option
           context: dps-va-di
