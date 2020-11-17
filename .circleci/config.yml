@@ -141,14 +141,14 @@ jobs:
           fingerprints:
             - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
       - run:
-          name: tag-major
+          name: tag
           command: |
             current_version=$(git describe --abbrev=0 | tr -d 'v')
             new_version=$(docker run --rm alpine/semver semver -c -i << parameters.semantic_version >> $current_version)
             git config --global user.email "twdsp.io@thoughtworks.com"
             git config --global user.name "twdps.io"
-            git tag -a "v${new_version}" -m "v${new_version}"
-            git push origin master "v${new_version}"
+            git tag -a "${new_version}" -m "${new_version}"
+            git push origin "v${new_version}"
 
   publish:
     executor: base-agent
