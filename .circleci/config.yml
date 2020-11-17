@@ -147,7 +147,7 @@ jobs:
             new_version=$(docker run --rm alpine/semver semver -c -i << parameters.semantic_version >> $current_version)
             git config --global user.email "twdsp.io@thoughtworks.com"
             git config --global user.name "twdps.io"
-            git tag -a "${new_version}"
+            git tag -a "${new_version}" -m "${new_version}"
             git push origin "${new_version}"
 
   publish:
