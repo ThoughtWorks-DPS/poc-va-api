@@ -154,6 +154,7 @@ jobs:
     executor: base-agent
     environment:
       GITHUB_TOKEN: secrethub://vapoc/platform/svc/github/access-token
+      GITHUB_USERNAME: secrethub://vapoc/platform/svc/github/username
     steps:
     - checkout
     - setup_remote_docker:
