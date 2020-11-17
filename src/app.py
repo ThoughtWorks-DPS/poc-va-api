@@ -11,9 +11,9 @@ app.config['SWAGGER'] = {
 }
 
 swagger = Swagger(app)
-health = HealthCheck(app, "/health")
+health = HealthCheck(app, "/teams/health")
 
-@app.route('/hello')
+@app.route('/teams/hello')
 @swag_from('static/hello.yml')
 def hello():
     return 'Hello from the API!'
