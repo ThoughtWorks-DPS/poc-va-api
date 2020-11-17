@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export url=$1
+export url=http://${1}/teams/health
 sleep 60
 export status_code=$(curl -LI $url -o /dev/null -w '%{http_code}\n' -s)
 

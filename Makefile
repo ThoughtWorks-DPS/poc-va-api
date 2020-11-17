@@ -19,5 +19,8 @@ integration-test:build-test
 swagger-test:
 	docker-compose -f docker-compose-swagger-test.yml up --exit-code-from swagger-test
 
+smoke-test:
+	./smoke-test.sh $(HOST)
+
 help:
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' Makefile | sed -n 's/^\(.*\): \(.*\)##\(.*\)/\1:\3/p'
