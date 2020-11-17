@@ -124,7 +124,7 @@ jobs:
       - checkout
       - run:
           name: run smoke test
-          command: make HOST=<< parameters.host >> smoke-test
+          command: ./smoke-test.sh << parameters.host >>
 
   tag:
     executor: base-agent
