@@ -30,12 +30,13 @@ jobs:
           chmod +x git-secrets
           ./git-secrets --add-provider -- curl https://raw.githubusercontent.com/ThoughtWorks-DPS/poc-resources/master/git-secrets-pattern.txt
           ./git-secrets --scan
+
   unit-test:
     executor: base-agent
     steps:
       - checkout
       - run: pip install -r requirements.txt
-      - run: pytest test/unit
+      - run: make unit-test
 
   integration-test:
     executor: base-agent
