@@ -59,7 +59,7 @@ jobs:
           step-name: Save Image
           command: |
             mkdir /tmp/images
-            docker save -o /tmp/images/project_api_latest.tar project_api:latest
+            docker save -o /tmp/images/project_api_latest.tar docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:${CIRCLE_SHA1:0:7}
       - persist_to_workspace:
           root: /tmp
           paths: images/project_api_latest.tar
@@ -82,7 +82,6 @@ jobs:
           command: |
             echo $GITHUB_TOKEN | docker login https://docker.pkg.github.com -u $GITHUB_USERNAME --password-stdin
             docker load -i /tmp/images/project_api_latest.tar
-            docker tag project_api:latest docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:${CIRCLE_SHA1:0:7}
             docker push docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:${CIRCLE_SHA1:0:7}
 
   deploy:
