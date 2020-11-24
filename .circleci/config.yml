@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   secrethub: secrethub/cli@1.0.0
+  git-tag: twdps/git-tag-orb@0.0.1
 
 executors:
   base-agent:
@@ -77,7 +78,7 @@ jobs:
           at: /tmp
       - add_ssh_keys:
           fingerprints:
-            - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
+            - $SVC_FINGERPRINT
       - secrethub/exec:
           step-name: publish
           command: |
@@ -126,30 +127,6 @@ jobs:
           name: run smoke test
           command: ./smoke-test.sh << parameters.host >>
 
-  tag:
-    executor: base-agent
-    parameters:
-      semantic_version:
-        description: target semantic version
-        type: string
-        default: ""
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 19.03.13
-      - add_ssh_keys:
-          fingerprints:
-            - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
-      - run:
-          name: tag
-          command: |
-            current_version=$(git describe --abbrev=0)
-            new_version=$(docker run --rm alpine/semver semver -c -i << parameters.semantic_version >> $current_version)
-            git config --global user.email "twdsp.io@thoughtworks.com"
-            git config --global user.name "twdps.io"
-            git tag -a "${new_version}" -m "${new_version}"
-            git push origin "${new_version}"
-
   publish:
     executor: base-agent
     environment:
@@ -161,7 +138,7 @@ jobs:
         version: 19.03.13
     - add_ssh_keys:
         fingerprints:
-          - "c9:bc:64:42:70:68:38:b0:04:75:d1:15:b2:01:be:2f"
+          - $SVC_FINGERPRINT
     - secrethub/exec:
         step-name: publish
         command: |
@@ -225,24 +202,27 @@ workflows:
           type: approval
           requires:
             - release
-      - tag:
-          name: tag-patch
+      - git-tag/apply:
+          name: apply git patch
+          semantic-version: patch
+          fingerprint: $SVC_FINGERPRINT
           context: dps-va-di
-          semantic_version: patch
           requires:
             - tag-patch-option
-      - tag:
-          name: tag-minor
-          semantic_version: minor
+      - git-tag/apply:
+          name: apply git minor
+          semantic-version: minor
+          fingerprint: $SVC_FINGERPRINT
+          context: dps-va-di
           requires:
             - tag-minor-option
+      - git-tag/apply:
+          name: apply git major
+          semantic-version: major
+          fingerprint: $SVC_FINGERPRINT
           context: dps-va-di
-      - tag:
-          name: tag-major
-          semantic_version: major
           requires:
             - tag-major-option
-          context: dps-va-di
       - publish:
           context: dps-va-di
           filters: *on-tag-master
