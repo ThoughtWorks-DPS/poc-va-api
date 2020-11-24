@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "helm.fullname" . }}
+  labels:
+    app: {{ include "helm.fullname" . }}
+    version: {{ .Values.image.tag }}
+spec:
+  hosts:
+    - {{ .Values.virtualService.host }}
+  gateways:
+    - {{ .Values.virtualService.gateway }}
+  http:
+    - match:
+        - uri:
+            prefix: /teams
+      rewrite:
+        uri: /
+      route:
+        - destination:
+            host: {{ include "helm.fullname" . }}
+            port:
+              number: {{ .Values.service.port }}

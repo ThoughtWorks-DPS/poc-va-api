@@ -18,6 +18,10 @@ serviceAccount:
   annotations: {}
   name: ""
 
+virtualService:
+  host: "override-me"
+  gateway: "override-me"
+
 podAnnotations: {}
 
 podSecurityContext: {}

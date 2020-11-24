@@ -1,0 +1,3 @@
+virtualService:
+  host: api.devportal.name
+  gateways: istio-system/api-gateway-staging

@@ -112,7 +112,7 @@ jobs:
             export AWS_ACCESS_KEY_ID=$(secrethub read vapoc/platform/svc/aws/DPSSimpleServiceAccount/aws-access-key-id)
             export AWS_SECRET_ACCESS_KEY=$(secrethub read vapoc/platform/svc/aws/DPSSimpleServiceAccount/aws-secret-access-key)
             export AWS_DEFAULT_REGION=us-west-2
-            helm upgrade --install poc-va-api helm --set-string image.tag=<< parameters.image_tag >> -n << parameters.environment >>
+            helm upgrade --install poc-va-api helm --set-string image.tag=<< parameters.image_tag >> -f helm/<< parameters.environment >>.yaml -n << parameters.environment >>
 
   smoke-test:
     executor: base-agent
