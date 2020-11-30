@@ -34,10 +34,22 @@ jobs:
 
   unit-test:
     executor: base-agent
+    environment:
+      CC_TEST_REPORTER_ID: secrethub://vapoc/platform/svc/code-climate/poc-va-api-reporter-id
     steps:
       - checkout
       - run: pip install -r requirements.txt
-      - run: pytest test/unit
+      - run:
+          name: Setup Code Climate test-reporter
+          command: |
+            # download test reporter as a static binary
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - secrethub/exec:
+          command: |
+            ./cc-test-reporter before-build
+            pytest test/unit
+            ./cc-test-reporter after-build --coverage-input-type clover --exit-code $?
 
   integration-test:
     executor: base-agent
@@ -153,7 +165,8 @@ workflows:
     jobs:
       - check-for-secrets:
           context: dps-va-di
-      - unit-test
+      - unit-test:
+          context: dps-va-di
       - integration-test
       - push-git-hash:
           context: dps-va-di
