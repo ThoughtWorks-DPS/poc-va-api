@@ -48,7 +48,7 @@ jobs:
       - secrethub/exec:
           command: |
             ./cc-test-reporter before-build
-            pytest --cov=src test/unit
+            pytest --cov=src --cov-report xml test/unit
             ./cc-test-reporter format-coverage -t coverage.py
             ./cc-test-reporter after-build upload-coverage --exit-code $?
 
