@@ -20,5 +20,5 @@ def test_hello_from_api(client):
 def test_health_endpoint(client):
     response = client.get('/teams/health')
     response_json = response.get_json()
-    assert response_json["status"] == 'successfoobar'
+    assert response_json["status"] == 'success'
     assert response.status == '200 OK'
