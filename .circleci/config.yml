@@ -49,8 +49,11 @@ jobs:
           command: |
             ./cc-test-reporter before-build
             pytest --cov=src --cov-report xml test/unit
+      - secrethub/exec:
+          command: |
             ./cc-test-reporter format-coverage -t coverage.py
             ./cc-test-reporter after-build upload-coverage --exit-code $?
+
 
   integration-test:
     executor: base-agent
