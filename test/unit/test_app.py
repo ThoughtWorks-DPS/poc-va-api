@@ -11,14 +11,14 @@ def client():
         yield client
 
 
-def test_hello_from_api(client):
-    response = client.get ('/teams/hello')
-    assert response.data.decode('utf-8') == 'Hello from the API!'
-    assert response.status == '200 OK'
+# def test_hello_from_api(client):
+#     response = client.get ('/teams/hello')
+#     assert response.data.decode('utf-8') == 'Hello from the API!'
+#     assert response.status == '200 OK'
 
 
 def test_health_endpoint(client):
     response = client.get('/teams/health')
     response_json = response.get_json()
-    assert response_json["status"] == 'success'
+    assert response_json["status"] == 'successfoobar'
     assert response.status == '200 OK'
