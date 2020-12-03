@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   secrethub: secrethub/cli@1.0.0
-  git-tag: twdps/git-tag-orb@0.0.1
+  git-tag: twdps/git-tag-orb@0.1.0
 
 executors:
   base-agent:
