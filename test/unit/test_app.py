@@ -16,6 +16,10 @@ def test_hello_from_api(client):
     assert response.data.decode('utf-8') == 'Hello from the API!'
     assert response.status == '200 OK'
 
+def test_code_climate(client):
+    response = client.get ('/teams/hello')
+    assert response.data.decode('utf-8') == 'Failing Test'
+    assert response.status == '404'
 
 def test_health_endpoint(client):
     response = client.get('/teams/health')
