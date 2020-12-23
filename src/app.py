@@ -19,8 +19,8 @@ info = EnvironmentDump(app, "/teams/info", include_python=False, include_os=Fals
 
 def application_data():
     return {
-        "sem_version": os.environ.get("SEM_VERSION"),
-        "git_hash": os.environ.get("GIT_HASH")
+        "SemVersion": os.environ.get("SEM_VERSION"),
+        "GitHash": os.environ.get("GIT_HASH")
     }
 
 

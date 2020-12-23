@@ -30,7 +30,7 @@ def test_info_endpoint(client):
     response = client.get('/teams/info')
     response_json = response.get_json()
 
-    assert response_json["application"]["sem_version"] == "1.0.0"
-    assert response_json["application"]["git_hash"] == "a1b2c3d45e"
+    assert response_json["application"]["SemVersion"] == "1.0.0"
+    assert response_json["application"]["GitHash"] == "a1b2c3d45e"
     assert response.status == '200 OK'
 
