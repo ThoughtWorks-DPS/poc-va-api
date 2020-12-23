@@ -1,6 +1,7 @@
 from flasgger import Swagger, swag_from
 from flask import Flask
-from healthcheck import HealthCheck
+from healthcheck import HealthCheck, EnvironmentDump
+import os
 
 app = Flask(__name__)
 
@@ -12,11 +13,25 @@ app.config['SWAGGER'] = {
 
 swagger = Swagger(app)
 health = HealthCheck(app, "/teams/health")
+info = EnvironmentDump(app, "/teams/info", include_python=False, include_os=False,
+                       include_process=False, include_config=False)
+
+
+def application_data():
+    return {
+        "sem_version": os.environ.get("SEM_VERSION"),
+        "git_hash": os.environ.get("GIT_HASH")
+    }
+
+
+info.add_section("application", application_data)
+
 
 @app.route('/teams/hello')
 @swag_from('static/hello.yml')
 def hello():
     return 'Hello from the API!'
+
 
 if __name__ == "__main__":
     app.run()

@@ -53,3 +53,7 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+info:
+  version: "dev"
+  git_hash: "dev"

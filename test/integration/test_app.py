@@ -6,3 +6,20 @@ def test_dockerfile():
 
     assert response.status_code == 200
     assert response.content.decode('utf-8') == "Hello from the API!"
+
+
+def test_healthcheck():
+    response = requests.get("http://127.0.0.1:5000/teams/health")
+    response_json = response.json()
+
+    assert response.status_code == 200
+    assert response_json["status"] == "success"
+
+
+def test_info():
+    response = requests.get("http://127.0.0.1:5000/teams/info")
+    response_json = response.json()
+
+    assert response.status_code == 200
+    assert response_json["application"]["sem_version"] == "1.0.0"
+    assert response_json["application"]["git_hash"] == "a1b2c3d45e"

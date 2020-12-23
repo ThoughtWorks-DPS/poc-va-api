@@ -35,6 +35,11 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: SEM_VERSION
+              value: {{ .Values.info.version }}
+            - name: GIT_HASH
+              value: {{ .Values.info.git_hash }}
           ports:
             - name: http
               containerPort: 5000

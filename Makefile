@@ -8,7 +8,7 @@ build:
 	docker build . -t docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$(GIT_HASH)
 
 app:build
-	docker run --name va-api -d -p 5000:5000 docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$(GIT_HASH)
+	docker run --env SEM_VERSION="1.0.0" --env GIT_HASH="a1b2c3d45e" --name va-api -d -p 5000:5000 docker.pkg.github.com/thoughtworks-dps/poc-va-api/poc-va-api:$(GIT_HASH)
 
 build-test:
 	docker build -t integration:latest -f Dockerfile.integration_test .
