@@ -1,6 +1,5 @@
 # POC-VA-API for delivery infrastructure
 [![Maintainability](https://api.codeclimate.com/v1/badges/cdd8fff724faa3eef566/maintainability)](https://codeclimate.com/github/ThoughtWorks-DPS/poc-va-api/maintainability)
-
 [![Test Coverage](https://api.codeclimate.com/v1/badges/cdd8fff724faa3eef566/test_coverage)](https://codeclimate.com/github/ThoughtWorks-DPS/poc-va-api/test_coverage)
 ## Local Environment Setup
 #### Install pre-commit
